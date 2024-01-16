@@ -1,0 +1,3 @@
+[submodule "dearbao-server-private"]
+	path = dearbao-server-private
+	url = https://github.com/YouAndMyFuBao/dearbao-server-private.git
