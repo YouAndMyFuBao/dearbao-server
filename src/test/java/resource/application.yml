@@ -1,0 +1,6 @@
+spring:
+  profiles:
+    include:
+      - mysql
+      - slack
+    active: test
