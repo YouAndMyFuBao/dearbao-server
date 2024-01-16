@@ -31,14 +31,13 @@ public class SlackWebhookUtil {
     private String webhookUrl;
 
     public void slackNotificationThread(Exception e, HttpServletRequest request) {
-
         //HttpServletRequest를 RequestInfo라는 DTO에 복사
         HttpServletRequestWrapper httpServletRequestWrapper = new HttpServletRequestWrapper(request);
         threadPoolTaskExecutor.execute(() -> sendSlackAlertErrorLog(e, httpServletRequestWrapper));
     }
 
     // 슬랙 알림 보내는 메서드
-    public void sendSlackAlertErrorLog(Exception e, HttpServletRequest request) {
+    private void sendSlackAlertErrorLog(Exception e, HttpServletRequest request) {
         try {
             slackClient.send(webhookUrl, payload(p -> p
                     .text("서버 에러 발생! 백엔드 측의 빠른 확인 요망")

@@ -1,5 +1,6 @@
 package com.fubao.dearbao.global.common.exception;
 
+import com.fubao.dearbao.global.util.SlackWebhookUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -18,6 +19,7 @@ import org.springframework.web.method.annotation.MethodArgumentTypeMismatchExcep
 @RequiredArgsConstructor
 @Slf4j
 public class GlobalExceptionHandler {
+    private final SlackWebhookUtil slackWebhookUtil;
 
     // 직접 정의한 에러
     @ExceptionHandler(CustomException.class)
@@ -34,6 +36,7 @@ public class GlobalExceptionHandler {
     protected ResponseEntity<ErrorResponse> handleHttpRequestMethodNotSupportedException(final HttpRequestMethodNotSupportedException e, HttpServletRequest request) {
         log.error("handleHttpRequestMethodNotSupportedException: {}", e.getMessage());
         final ErrorResponse errorResponse = ErrorResponse.of(ResponseCode.METHOD_NOT_ALLOWED);
+        slackWebhookUtil.slackNotificationThread(e,request);
         return ResponseEntity
                 .status(ResponseCode.METHOD_NOT_ALLOWED.getStatus())
                 .body(errorResponse);
@@ -43,6 +46,7 @@ public class GlobalExceptionHandler {
     protected ResponseEntity<ErrorResponse> handleException(final Exception e, HttpServletRequest request) {
         log.error("handleException: {}", e.getMessage());
         final ErrorResponse errorResponse = ErrorResponse.of(ResponseCode.INTERNAL_SERVER_ERROR);
+        slackWebhookUtil.slackNotificationThread(e,request);
         return ResponseEntity
                 .status(ResponseCode.INTERNAL_SERVER_ERROR.getStatus())
                 .body(errorResponse);
@@ -52,6 +56,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ErrorResponse> processValidationError(MethodArgumentNotValidException e, HttpServletRequest request) {
         final ErrorResponse errorResponse = ErrorResponse.of(ResponseCode.INTERNAL_SERVER_ERROR, e);
+        slackWebhookUtil.slackNotificationThread(e,request);
         return ResponseEntity
                 .status(e.getStatusCode())
                 .body(errorResponse);
@@ -61,6 +66,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
     public ResponseEntity<ErrorResponse> methodArgumentTypeMismatchExceptionError(MethodArgumentTypeMismatchException e, HttpServletRequest request) {
         final ErrorResponse errorResponse = ErrorResponse.of(ResponseCode.BAD_REQUEST, e);
+        slackWebhookUtil.slackNotificationThread(e,request);
         return ResponseEntity
                 .status(ResponseCode.BAD_REQUEST.getStatus())
                 .body(errorResponse);
@@ -70,6 +76,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(HttpMediaTypeNotSupportedException.class)
     public ResponseEntity<ErrorResponse> httpMediaTypeNotSupportedExceptionError(HttpMediaTypeNotSupportedException e, HttpServletRequest request) {
         final ErrorResponse errorResponse = ErrorResponse.of(ResponseCode.BAD_REQUEST, e);
+        slackWebhookUtil.slackNotificationThread(e,request);
         return ResponseEntity
                 .status(e.getStatusCode())
                 .body(errorResponse);
@@ -79,6 +86,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(HttpClientErrorException.class)
     public ResponseEntity<ErrorResponse> httpMediaTypeNotSupportedExceptionError(HttpClientErrorException e, HttpServletRequest request) {
         final ErrorResponse errorResponse = ErrorResponse.of(ResponseCode.INTERNAL_SERVER_ERROR, e);
+        slackWebhookUtil.slackNotificationThread(e,request);
         return ResponseEntity
                 .status(e.getStatusCode())
                 .body(errorResponse);
@@ -88,6 +96,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(HttpServerErrorException.class)
     public ResponseEntity<ErrorResponse> httpServerErrorExceptionError(HttpServerErrorException e, HttpServletRequest request) {
         final ErrorResponse errorResponse = ErrorResponse.of(ResponseCode.INTERNAL_SERVER_ERROR, e);
+        slackWebhookUtil.slackNotificationThread(e,request);
         return ResponseEntity
                 .status(e.getStatusCode())
                 .body(errorResponse);
