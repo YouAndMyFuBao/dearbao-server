@@ -35,6 +35,9 @@ dependencies {
     testCompileOnly 'org.projectlombok:lombok'
     testAnnotationProcessor 'org.projectlombok:lombok'
 
+    //slack
+    implementation 'com.squareup.okio:okio-jvm:3.7.0'
+    implementation 'com.slack.api:slack-api-client:1.36.1'
 }
 
 jar {
