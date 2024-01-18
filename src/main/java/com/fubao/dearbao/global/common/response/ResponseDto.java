@@ -9,6 +9,7 @@ import lombok.ToString;
 @ToString
 @RequiredArgsConstructor
 public class ResponseDto {
+
     private final Boolean isSuccess;
     private final String code;
     private final String message;

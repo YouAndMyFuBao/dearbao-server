@@ -3,6 +3,7 @@ package com.fubao.dearbao.global.common.exception;
 import com.fubao.dearbao.global.common.response.ResponseDto;
 
 public class ErrorResponse extends ResponseDto {
+
     private ErrorResponse(ResponseCode errorCode) {
         super(false, errorCode.getCode(), errorCode.getMessage());
     }

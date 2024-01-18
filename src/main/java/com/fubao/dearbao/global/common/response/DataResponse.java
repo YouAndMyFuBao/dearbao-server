@@ -21,7 +21,8 @@ public class DataResponse<T> extends ResponseDto {
 
     public static <T> DataResponse<T> of(T data) {
         if (data instanceof CustomResponseCode) {
-            return new DataResponse<>(new MessageResponse(((CustomResponseCode) data).getMessage()));
+            return new DataResponse<>(
+                new MessageResponse(((CustomResponseCode) data).getMessage()));
         } else if (data instanceof String) {
             return new DataResponse<>(new MessageResponse((String) data));
         } else {
@@ -31,6 +32,7 @@ public class DataResponse<T> extends ResponseDto {
 
     @Getter
     private static class MessageResponse {
+
         private final String message;
 
         private MessageResponse(String message) {

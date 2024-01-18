@@ -24,7 +24,7 @@ public enum ResponseCode {
     UNAUTHORIZED("AUTH-ERR-001", HttpStatus.UNAUTHORIZED, "접근 권한이 없는 유저입니다."),
     INVALID_TOKEN("AUTH-ERR-002", HttpStatus.UNAUTHORIZED, "유효한 토큰이 아닙니다."),
     EXPIRED_TOKEN("AUTH-ERR-003", HttpStatus.UNAUTHORIZED, "만료된 토근입니다."),
-    UNSUPPORTED_TOKEN("AUTH-ERR-004",HttpStatus.UNAUTHORIZED , "지원하지 않는 토큰입니다."),
+    UNSUPPORTED_TOKEN("AUTH-ERR-004", HttpStatus.UNAUTHORIZED, "지원하지 않는 토큰입니다."),
     //test
     TEST("TEST-ERR-001", HttpStatus.BAD_REQUEST, "테스트입니다");
     private final String code;
@@ -38,7 +38,7 @@ public enum ResponseCode {
 
     public String getMessage(String message) {
         return Optional.ofNullable(message)
-                .filter(Predicate.not(String::isBlank))
-                .orElse(this.getMessage());
+            .filter(Predicate.not(String::isBlank))
+            .orElse(this.getMessage());
     }
 }

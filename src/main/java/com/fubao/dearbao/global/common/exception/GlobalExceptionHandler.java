@@ -19,86 +19,95 @@ import org.springframework.web.method.annotation.MethodArgumentTypeMismatchExcep
 @RequiredArgsConstructor
 @Slf4j
 public class GlobalExceptionHandler {
+
     private final SlackWebhookUtil slackWebhookUtil;
 
     // 직접 정의한 에러
     @ExceptionHandler(CustomException.class)
-    protected ResponseEntity<ErrorResponse> handleCustomException(final CustomException e, HttpServletRequest request) {
+    protected ResponseEntity<ErrorResponse> handleCustomException(final CustomException e,
+        HttpServletRequest request) {
         log.error("handleCustomException: {}", e.getResponseCode().toString());
         final ErrorResponse errorResponse = ErrorResponse.of(e.getResponseCode());
         return ResponseEntity
-                .status(e.getResponseCode().getStatus())
-                .body(errorResponse);
+            .status(e.getResponseCode().getStatus())
+            .body(errorResponse);
     }
 
     // 지원하지 않는 HttpRequestMethod
     @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
-    protected ResponseEntity<ErrorResponse> handleHttpRequestMethodNotSupportedException(final HttpRequestMethodNotSupportedException e, HttpServletRequest request) {
+    protected ResponseEntity<ErrorResponse> handleHttpRequestMethodNotSupportedException(
+        final HttpRequestMethodNotSupportedException e, HttpServletRequest request) {
         log.error("handleHttpRequestMethodNotSupportedException: {}", e.getMessage());
         final ErrorResponse errorResponse = ErrorResponse.of(ResponseCode.METHOD_NOT_ALLOWED);
-        slackWebhookUtil.slackNotificationThread(e,request);
+        slackWebhookUtil.slackNotificationThread(e, request);
         return ResponseEntity
-                .status(ResponseCode.METHOD_NOT_ALLOWED.getStatus())
-                .body(errorResponse);
+            .status(ResponseCode.METHOD_NOT_ALLOWED.getStatus())
+            .body(errorResponse);
     }
 
     @ExceptionHandler(Exception.class)
-    protected ResponseEntity<ErrorResponse> handleException(final Exception e, HttpServletRequest request) {
+    protected ResponseEntity<ErrorResponse> handleException(final Exception e,
+        HttpServletRequest request) {
         log.error("handleException: {}", e.getMessage());
         final ErrorResponse errorResponse = ErrorResponse.of(ResponseCode.INTERNAL_SERVER_ERROR);
-        slackWebhookUtil.slackNotificationThread(e,request);
+        slackWebhookUtil.slackNotificationThread(e, request);
         return ResponseEntity
-                .status(ResponseCode.INTERNAL_SERVER_ERROR.getStatus())
-                .body(errorResponse);
+            .status(ResponseCode.INTERNAL_SERVER_ERROR.getStatus())
+            .body(errorResponse);
     }
 
     //validation exception 처리
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<ErrorResponse> processValidationError(MethodArgumentNotValidException e, HttpServletRequest request) {
+    public ResponseEntity<ErrorResponse> processValidationError(MethodArgumentNotValidException e,
+        HttpServletRequest request) {
         final ErrorResponse errorResponse = ErrorResponse.of(ResponseCode.INTERNAL_SERVER_ERROR, e);
-        slackWebhookUtil.slackNotificationThread(e,request);
+        slackWebhookUtil.slackNotificationThread(e, request);
         return ResponseEntity
-                .status(e.getStatusCode())
-                .body(errorResponse);
+            .status(e.getStatusCode())
+            .body(errorResponse);
     }
 
     //잘못된 자료형으로 인한 에러
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
-    public ResponseEntity<ErrorResponse> methodArgumentTypeMismatchExceptionError(MethodArgumentTypeMismatchException e, HttpServletRequest request) {
+    public ResponseEntity<ErrorResponse> methodArgumentTypeMismatchExceptionError(
+        MethodArgumentTypeMismatchException e, HttpServletRequest request) {
         final ErrorResponse errorResponse = ErrorResponse.of(ResponseCode.BAD_REQUEST, e);
-        slackWebhookUtil.slackNotificationThread(e,request);
+        slackWebhookUtil.slackNotificationThread(e, request);
         return ResponseEntity
-                .status(ResponseCode.BAD_REQUEST.getStatus())
-                .body(errorResponse);
+            .status(ResponseCode.BAD_REQUEST.getStatus())
+            .body(errorResponse);
     }
 
     //지원하지 않는 media type 에러
     @ExceptionHandler(HttpMediaTypeNotSupportedException.class)
-    public ResponseEntity<ErrorResponse> httpMediaTypeNotSupportedExceptionError(HttpMediaTypeNotSupportedException e, HttpServletRequest request) {
+    public ResponseEntity<ErrorResponse> httpMediaTypeNotSupportedExceptionError(
+        HttpMediaTypeNotSupportedException e, HttpServletRequest request) {
         final ErrorResponse errorResponse = ErrorResponse.of(ResponseCode.BAD_REQUEST, e);
-        slackWebhookUtil.slackNotificationThread(e,request);
+        slackWebhookUtil.slackNotificationThread(e, request);
         return ResponseEntity
-                .status(e.getStatusCode())
-                .body(errorResponse);
+            .status(e.getStatusCode())
+            .body(errorResponse);
     }
 
     //외부 api client 에러
     @ExceptionHandler(HttpClientErrorException.class)
-    public ResponseEntity<ErrorResponse> httpMediaTypeNotSupportedExceptionError(HttpClientErrorException e, HttpServletRequest request) {
+    public ResponseEntity<ErrorResponse> httpMediaTypeNotSupportedExceptionError(
+        HttpClientErrorException e, HttpServletRequest request) {
         final ErrorResponse errorResponse = ErrorResponse.of(ResponseCode.INTERNAL_SERVER_ERROR, e);
-        slackWebhookUtil.slackNotificationThread(e,request);
+        slackWebhookUtil.slackNotificationThread(e, request);
         return ResponseEntity
-                .status(e.getStatusCode())
-                .body(errorResponse);
+            .status(e.getStatusCode())
+            .body(errorResponse);
     }
 
     //외부 api server 에러
     @ExceptionHandler(HttpServerErrorException.class)
-    public ResponseEntity<ErrorResponse> httpServerErrorExceptionError(HttpServerErrorException e, HttpServletRequest request) {
+    public ResponseEntity<ErrorResponse> httpServerErrorExceptionError(HttpServerErrorException e,
+        HttpServletRequest request) {
         final ErrorResponse errorResponse = ErrorResponse.of(ResponseCode.INTERNAL_SERVER_ERROR, e);
-        slackWebhookUtil.slackNotificationThread(e,request);
+        slackWebhookUtil.slackNotificationThread(e, request);
         return ResponseEntity
-                .status(e.getStatusCode())
-                .body(errorResponse);
+            .status(e.getStatusCode())
+            .body(errorResponse);
     }
 }
