@@ -1,5 +1,4 @@
 spring:
-  port: 8090
   profiles:
     include:
       - mysql
