@@ -2,7 +2,7 @@ name: CI
 
 on:
   push:
-    branches: ["develop"]
+    branches: ["feature/5-CI"]
 
 permissions:
   contents: read
