@@ -39,4 +39,4 @@ jobs:
       - name: Build with Gradle
         run: |
           chmod +x gradlew
-          ./gradlew clean build
+          ./gradlew build
