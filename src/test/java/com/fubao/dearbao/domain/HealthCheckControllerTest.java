@@ -1,5 +1,6 @@
 package com.fubao.dearbao.domain;
 
+import com.fubao.dearbao.DearbaoApplication;
 import com.fubao.dearbao.global.util.SlackWebhookUtil;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -18,7 +19,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@SpringBootTest(classes = HealthCheckControllerTest.class)
+@SpringBootTest(classes = DearbaoApplication.class)
 @AutoConfigureMockMvc
 class HealthCheckControllerTest {
     @Autowired
@@ -31,7 +32,7 @@ class HealthCheckControllerTest {
 
     //when //then
     mockMvc.perform(
-        get("/")
+        get("")
     )
         .andDo(print())
         .andExpect(status().isOk())
