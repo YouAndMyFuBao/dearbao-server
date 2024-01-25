@@ -14,6 +14,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
@@ -34,7 +35,6 @@ class HealthCheckControllerTest {
     mockMvc.perform(
         get("")
     )
-        .andDo(print())
         .andExpect(status().isOk())
         .andExpect(content().string("The service is up and running..."));
     }
