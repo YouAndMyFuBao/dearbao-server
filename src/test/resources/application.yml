@@ -3,4 +3,7 @@ spring:
     include:
       - mysql
       - slack
+      - redis
+      - security
+      - oauth
     active: test
