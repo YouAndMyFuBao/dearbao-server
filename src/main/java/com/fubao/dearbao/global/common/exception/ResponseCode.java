@@ -13,6 +13,7 @@ public enum ResponseCode {
     //success
     OK("success", HttpStatus.OK, "요청에 성공하였습니다."),
     //member
+    NOT_GET_KAKAO_INFO("MEM-ERR-001", HttpStatus.BAD_REQUEST, "카카오 정보를 가져오는데 실패했습니다."),
 
     //post
 
