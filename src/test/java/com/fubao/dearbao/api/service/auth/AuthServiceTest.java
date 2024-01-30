@@ -10,6 +10,7 @@ import com.fubao.dearbao.domain.member.MemberRepository;
 import com.fubao.dearbao.domain.member.MemberRole;
 import com.fubao.dearbao.domain.member.MemberState;
 import com.fubao.dearbao.domain.oauth.KakaoApiClient;
+import com.fubao.dearbao.global.util.RedisUtil;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,6 +29,8 @@ class AuthServiceTest extends IntegrationTestSupport {
     private KakaoApiClient kakaoApiClient;
     @Autowired
     private MemberRepository memberRepository;
+    @MockBean
+    private RedisUtil redisUtil;
 
     @DisplayName("회원가입을 진행한다. 유저가 존재하여 유저를 새로 생성하지 않고 jwt를 발급한다.")
     @Test
