@@ -24,7 +24,7 @@ class UserDetailsServiceImplTest extends IntegrationTestSupport {
     @Autowired
     private MemberRepository memberRepository;
 
-    @DisplayName("")
+    @DisplayName("유저 조회를 조회하고 userDetail을 반환한다.")
     @Test
     void loadUserByUsernameExistUser() {
         //given
@@ -41,7 +41,7 @@ class UserDetailsServiceImplTest extends IntegrationTestSupport {
                 Collections.singleton(new SimpleGrantedAuthority(member.getRole().getName())));
     }
 
-    @DisplayName("")
+    @DisplayName("유저를 조회하지만 존재하지 않으면 null을 반환한다.")
     @Test
     void loadUserByUsernameNotExistUser() {
         //given

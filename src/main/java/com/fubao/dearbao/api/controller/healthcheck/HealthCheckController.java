@@ -1,4 +1,4 @@
-package com.fubao.dearbao.domain;
+package com.fubao.dearbao.api.controller.healthcheck;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
