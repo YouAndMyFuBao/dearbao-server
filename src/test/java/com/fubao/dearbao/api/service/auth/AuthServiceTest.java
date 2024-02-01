@@ -2,6 +2,7 @@ package com.fubao.dearbao.api.service.auth;
 
 import com.fubao.dearbao.IntegrationTestSupport;
 import com.fubao.dearbao.api.controller.auth.dto.response.KakaoLoginResponse;
+import com.fubao.dearbao.api.service.auth.dto.InitMemberServiceDto;
 import com.fubao.dearbao.api.service.auth.dto.KakaoInfoDto;
 import com.fubao.dearbao.api.service.auth.dto.KakaoLoginServiceDto;
 import com.fubao.dearbao.domain.member.Member;
@@ -10,7 +11,10 @@ import com.fubao.dearbao.domain.member.MemberRepository;
 import com.fubao.dearbao.domain.member.MemberRole;
 import com.fubao.dearbao.domain.member.MemberState;
 import com.fubao.dearbao.domain.oauth.KakaoApiClient;
+import com.fubao.dearbao.global.common.exception.CustomException;
+import com.fubao.dearbao.global.common.exception.ResponseCode;
 import com.fubao.dearbao.global.util.RedisUtil;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,6 +36,11 @@ class AuthServiceTest extends IntegrationTestSupport {
     @MockBean
     private RedisUtil redisUtil;
 
+    @BeforeEach
+    void tearDown() {
+        memberRepository.deleteAllInBatch();
+    }
+
     @DisplayName("회원가입을 진행한다. 유저가 존재하여 유저를 새로 생성하지 않고 jwt를 발급한다.")
     @Test
     void kakaoLogin() {
@@ -39,8 +48,7 @@ class AuthServiceTest extends IntegrationTestSupport {
         String code = "code";
         String accessToken = "token";
         String providerId = "id";
-        Member member = createMember("peter", providerId, MemberGender.MALE, MemberState.ACTIVE,
-            MemberRole.MEMBER);
+        Member member = createMember(providerId);
         memberRepository.save(member);
         KakaoLoginServiceDto kakaoLoginServiceDto = KakaoLoginServiceDto.of(code);
         given(kakaoApiClient.requestAccessToken(any(KakaoLoginServiceDto.class)))
@@ -86,13 +94,104 @@ class AuthServiceTest extends IntegrationTestSupport {
             .contains(providerId);
     }
 
-    private Member createMember(String name, String providerId, MemberGender gender,
-        MemberState state, MemberRole role) {
+    @DisplayName("멤버 정보를 입력한다.")
+    @Test
+    void initMember() {
+        //given
+        Member member = createMember("001");
+        Member savedMember = memberRepository.save(member);
+        Long memberId = savedMember.getId();
+        String nickname = "peter";
+        MemberGender title = MemberGender.FEMALE;
+        InitMemberServiceDto initMemberServiceDto = InitMemberServiceDto.of(memberId, nickname,
+            title);
+
+        //when
+        authService.initMember(initMemberServiceDto);
+
+        //then
+        List<Member> initMember = memberRepository.findAll();
+        assertThat(initMember).hasSize(1)
+            .extracting("name", "gender", "role")
+            .contains(
+                tuple(nickname, title, MemberRole.ROLE_MEMBER)
+            );
+    }
+
+    @DisplayName("멤버 정보를 입력할때 중복된 닉네임이면 예외가 발생한다.")
+    @Test
+    void initMemberWhenExistNickname() {
+        //given
+        Member member = createMember("001");
+        Member savedMember = memberRepository.save(member);
+
+        Long memberId = savedMember.getId();
+        String nickname = "peter";
+        MemberGender title = MemberGender.FEMALE;
+        InitMemberServiceDto initMemberServiceDto = InitMemberServiceDto.of(memberId, nickname,
+            title);
+
+        memberRepository.save(createMemberWithInit("001", nickname, title));
+
+        //when then
+        assertThatThrownBy(() -> authService.initMember(initMemberServiceDto))
+            .isInstanceOf(CustomException.class)
+            .extracting("responseCode")
+            .isEqualTo(ResponseCode.EXIST_NICKNAME);
+    }
+
+    @DisplayName("멤버 정보를 입력할때 닉네임의 길이가 2미만일 경우 예외가 발생한다.")
+    @Test
+    void initMemberWithNicknameLessThan2() {
+        //given
+        Member member = createMember("001");
+        Member savedMember = memberRepository.save(member);
+        Long memberId = savedMember.getId();
+        String nickname = "1";
+        MemberGender title = MemberGender.FEMALE;
+        InitMemberServiceDto initMemberServiceDto = InitMemberServiceDto.of(memberId, nickname,
+            title);
+
+        //when then
+        assertThatThrownBy(() -> authService.initMember(initMemberServiceDto))
+            .isInstanceOf(CustomException.class)
+            .extracting("responseCode")
+            .isEqualTo(ResponseCode.INVALID_NICKNAME);
+    }
+
+    @DisplayName("멤버 정보를 입력할때 닉네임의 길이가 8초과일 경우 예외가 발생한다.")
+    @Test
+    void initMemberWithNicknameMoreThan8() {
+        //given
+        Member member = createMember("001");
+        Member savedMember = memberRepository.save(member);
+        Long memberId = savedMember.getId();
+        String nickname = "123456789";
+        MemberGender title = MemberGender.FEMALE;
+        InitMemberServiceDto initMemberServiceDto = InitMemberServiceDto.of(memberId, nickname,
+            title);
+
+        //when then
+        assertThatThrownBy(() -> authService.initMember(initMemberServiceDto))
+            .isInstanceOf(CustomException.class)
+            .extracting("responseCode")
+            .isEqualTo(ResponseCode.INVALID_NICKNAME);
+    }
+
+    private Member createMember(String providerId) {
         return Member.builder()
-            .name(name)
-            .gender(gender)
-            .state(state)
-            .role(role)
+            .state(MemberState.ACTIVE)
+            .role(MemberRole.ROLE_GUEST)
+            .providerId(providerId)
+            .build();
+    }
+
+    private Member createMemberWithInit(String providerId, String nickname, MemberGender title) {
+        return Member.builder()
+            .name(nickname)
+            .gender(title)
+            .state(MemberState.ACTIVE)
+            .role(MemberRole.ROLE_MEMBER)
             .providerId(providerId)
             .build();
     }

@@ -11,6 +11,7 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.ToString;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -21,6 +22,7 @@ import java.util.List;
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
+@ToString
 public class Member extends BaseEntity {
 
     @Id
@@ -49,7 +51,8 @@ public class Member extends BaseEntity {
         this.gender = gender;
         this.state = state;
     }
-    public Member(Member member){
+
+    public Member(Member member) {
         this.state = member.getState();
         this.role = member.getRole();
         this.providerId = member.getProviderId();
@@ -57,9 +60,10 @@ public class Member extends BaseEntity {
         this.id = member.getId();
         this.name = member.getName();
     }
+
     private Member(String providerId) {
         this.providerId = providerId;
-        this.role = MemberRole.GUEST;
+        this.role = MemberRole.ROLE_GUEST;
         this.state = MemberState.ACTIVE;
     }
 
@@ -67,4 +71,13 @@ public class Member extends BaseEntity {
         return new Member(providerId);
     }
 
+    public void initMember(String nickName, MemberGender gender) {
+        this.name = nickName;
+        this.gender = gender;
+        this.role = MemberRole.ROLE_MEMBER;
+    }
+
+    public boolean isPossibleNickname(String nickName) {
+        return nickName.length() >= 2 && nickName.length() <= 8;
+    }
 }
