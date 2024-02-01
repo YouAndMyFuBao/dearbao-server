@@ -2,6 +2,7 @@ package com.fubao.dearbao.global.config.security;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import java.util.List;
+import com.fubao.dearbao.domain.member.MemberRole;
 import com.fubao.dearbao.global.config.security.jwt.JwtAuthenticationCheckFilter;
 import com.fubao.dearbao.global.config.security.jwt.JwtAuthenticationEntryPoint;
 import com.fubao.dearbao.global.config.security.jwt.JwtTokenProvider;
@@ -31,10 +32,12 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 public class SecurityConfig {
 
     private final String[] GET_AUTHENTICATED_URLS = {
-        "/"
+    };
+    private final String[] GUEST_URLS = {
+        "/api/v1/auth/init"
     };
     private final String[] GET_PERMITTED_URLS = {
-        "/api/v1/auth/kakao/code"
+        "/api/v1/auth/kakao/code","/"
     };
     private final String[] POST_PERMITTED_URLS = {
         "/api/v1/auth/kakao"
@@ -64,7 +67,7 @@ public class SecurityConfig {
                 //인증 중 예외 발생 시 jwtAuthenticationEntryPoint 호출
             )
             .authorizeHttpRequests(request -> request
-                .requestMatchers(HttpMethod.GET, GET_AUTHENTICATED_URLS).authenticated()
+                .requestMatchers(HttpMethod.GET, GUEST_URLS).hasRole(MemberRole.ROLE_GUEST.getName())
                 .requestMatchers(HttpMethod.GET, GET_PERMITTED_URLS).permitAll()
                 .requestMatchers(HttpMethod.POST, POST_PERMITTED_URLS).permitAll()
                 .anyRequest().authenticated()

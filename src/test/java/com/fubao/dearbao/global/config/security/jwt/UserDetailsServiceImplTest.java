@@ -57,7 +57,7 @@ class UserDetailsServiceImplTest extends IntegrationTestSupport {
         return Member.builder()
             .providerId(providerId)
             .state(MemberState.ACTIVE)
-            .role(MemberRole.GUEST)
+            .role(MemberRole.ROLE_GUEST)
             .build();
     }
 }
