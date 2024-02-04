@@ -40,7 +40,7 @@ public class SecurityConfig {
         "/api/v1/auth/kakao/code","/"
     };
     private final String[] POST_PERMITTED_URLS = {
-        "/api/v1/auth/kakao"
+        "/api/v1/auth/kakao", "/api/v1/auth/token/refresh",
     };
     @Value("${security.cors-urls}")
     private final List<String> CORS_URLS;

@@ -19,8 +19,6 @@ import java.sql.Timestamp;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import javax.crypto.SecretKey;
-import lombok.NoArgsConstructor;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -64,14 +62,15 @@ public class JwtTokenProvider {
 
     public AuthToken createToken(String id) {
         LocalDateTime now = LocalDateTime.now();
-        AuthToken authTokens = AuthToken.of(createAccessToken(now, id),
+        AuthToken authTokens = AuthToken.of(createAccessToken(id),
             createRefreshToken(now, id));
         redisUtil.setStringData(authTokens.getRefreshToken(), authTokens.getAccessToken(),
             Duration.ofDays(refreshTokenValidityInDay));
         return authTokens;
     }
 
-    private String createAccessToken(LocalDateTime time, String username) {
+    private String createAccessToken(String username) {
+        LocalDateTime time = LocalDateTime.now();
         return builder()
             .setSubject(username)
             .claim(TOKEN_TYPE, ACCESS_TOKEN)
@@ -100,19 +99,27 @@ public class JwtTokenProvider {
         } catch (ExpiredJwtException e) {
             log.info("Expired JWT token.");
             log.trace("Expired JWT token trace: ", e);
-            request.setAttribute("exception", ResponseCode.EXPIRED_TOKEN);
+            if (request != null) {
+                request.setAttribute("exception", ResponseCode.EXPIRED_TOKEN);
+            }
         } catch (UnsupportedJwtException e) {
             log.info("Unsupported JWT token.");
             log.trace("Unsupported JWT token trace: ", e);
-            request.setAttribute("exception", ResponseCode.UNSUPPORTED_TOKEN);
+            if (request != null) {
+                request.setAttribute("exception", ResponseCode.UNSUPPORTED_TOKEN);
+            }
         } catch (MalformedJwtException | SecurityException e) {
             log.info("Invalid JWT signature.");
             log.trace("Invalid JWT signature trace: ", e);
-            request.setAttribute("exception", ResponseCode.INVALID_TOKEN);
+            if (request != null) {
+                request.setAttribute("exception", ResponseCode.INVALID_TOKEN);
+            }
         } catch (IllegalArgumentException e) {
             log.info("JWT token compact of handler are invalid.");
             log.trace("JWT token compact of handler are invalid trace: ", e);
-            request.setAttribute("exception", ResponseCode.INVALID_TOKEN);
+            if (request != null) {
+                request.setAttribute("exception", ResponseCode.INVALID_TOKEN);
+            }
         }
         return false;
     }
@@ -123,5 +130,9 @@ public class JwtTokenProvider {
         UserDetails userDetails = userDetailsService.loadUserByUsername(usernameFromToken);
         return new UsernamePasswordAuthenticationToken(userDetails, null,
             userDetails.getAuthorities());
+    }
+
+    public String getUsernameFromRefreshToken(String refreshToken) {
+        return jwtParser.parseClaimsJws(refreshToken).getBody().getSubject();
     }
 }

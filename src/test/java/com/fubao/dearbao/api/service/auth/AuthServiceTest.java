@@ -2,9 +2,11 @@ package com.fubao.dearbao.api.service.auth;
 
 import com.fubao.dearbao.IntegrationTestSupport;
 import com.fubao.dearbao.api.controller.auth.dto.response.KakaoLoginResponse;
+import com.fubao.dearbao.api.controller.auth.dto.response.TokenRegenerateResponse;
 import com.fubao.dearbao.api.service.auth.dto.InitMemberServiceDto;
 import com.fubao.dearbao.api.service.auth.dto.KakaoInfoDto;
 import com.fubao.dearbao.api.service.auth.dto.KakaoLoginServiceDto;
+import com.fubao.dearbao.api.service.auth.dto.RegenerateTokenServiceDto;
 import com.fubao.dearbao.domain.member.Member;
 import com.fubao.dearbao.domain.member.MemberGender;
 import com.fubao.dearbao.domain.member.MemberRepository;
@@ -13,13 +15,18 @@ import com.fubao.dearbao.domain.member.MemberState;
 import com.fubao.dearbao.domain.oauth.KakaoApiClient;
 import com.fubao.dearbao.global.common.exception.CustomException;
 import com.fubao.dearbao.global.common.exception.ResponseCode;
+import com.fubao.dearbao.global.common.vo.AuthToken;
+import com.fubao.dearbao.global.config.security.jwt.JwtTokenProvider;
 import com.fubao.dearbao.global.util.RedisUtil;
+import io.jsonwebtoken.MalformedJwtException;
+import jakarta.servlet.http.HttpServletRequest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 
+import java.nio.charset.MalformedInputException;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.*;
@@ -35,6 +42,8 @@ class AuthServiceTest extends IntegrationTestSupport {
     private MemberRepository memberRepository;
     @MockBean
     private RedisUtil redisUtil;
+    @Autowired
+    private JwtTokenProvider jwtTokenProvider;
 
     @BeforeEach
     void tearDown() {
@@ -178,6 +187,51 @@ class AuthServiceTest extends IntegrationTestSupport {
             .isEqualTo(ResponseCode.INVALID_NICKNAME);
     }
 
+    @DisplayName("token을 재생성한다.")
+    @Test
+    void tokenRegenerate() {
+        //given
+        AuthToken authToken = createToken(1L);
+        RegenerateTokenServiceDto dto = new RegenerateTokenServiceDto(
+            authToken.getAccessToken(), authToken.getRefreshToken());
+        given(redisUtil.hasKey(dto.getRefreshToken()))
+            .willReturn(true);
+        //when
+       TokenRegenerateResponse response = authService.tokenRegenerate(dto);
+        //then
+        assertThat(response).isNotNull();
+    }
+    @DisplayName("token을 재생성할때 잘못된 refresh token일 경우 예외가 발생한다.")
+    @Test
+    void tokenRegenerateWithInvalidRefreshToken() {
+        //given
+        AuthToken authToken = createToken(1L);
+        RegenerateTokenServiceDto dto = new RegenerateTokenServiceDto(
+            authToken.getAccessToken(), "123");
+        given(redisUtil.hasKey(dto.getRefreshToken()))
+            .willReturn(true);
+        //when
+        assertThatThrownBy(()->authService.tokenRegenerate(dto))
+            .isInstanceOf(CustomException.class)
+            .extracting("responseCode")
+            .isEqualTo(ResponseCode.INVALID_TOKEN);
+    }
+    @DisplayName("token을 재생성할때 cache에 refresh token이 없다면 예외가 발생한다.")
+    @Test
+    void tokenRegenerateWithoutRefreshTokenNotInCache() {
+        //given
+        AuthToken authToken = createToken(1L);
+        RegenerateTokenServiceDto dto = new RegenerateTokenServiceDto(
+            authToken.getAccessToken(), "123");
+        given(redisUtil.hasKey(dto.getRefreshToken()))
+            .willReturn(false);
+        //when
+        assertThatThrownBy(()->authService.tokenRegenerate(dto))
+            .isInstanceOf(CustomException.class)
+            .extracting("responseCode")
+            .isEqualTo(ResponseCode.INVALID_TOKEN);
+    }
+
     private Member createMember(String providerId) {
         return Member.builder()
             .state(MemberState.ACTIVE)
@@ -194,5 +248,8 @@ class AuthServiceTest extends IntegrationTestSupport {
             .role(MemberRole.ROLE_MEMBER)
             .providerId(providerId)
             .build();
+    }
+    private AuthToken createToken(long id){
+        return jwtTokenProvider.createToken(String.valueOf(id));
     }
 }
