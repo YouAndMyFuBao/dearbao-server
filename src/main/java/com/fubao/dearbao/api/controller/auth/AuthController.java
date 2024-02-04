@@ -2,10 +2,13 @@ package com.fubao.dearbao.api.controller.auth;
 
 import com.fubao.dearbao.api.controller.auth.dto.reqeust.InitMemberRequest;
 import com.fubao.dearbao.api.controller.auth.dto.reqeust.KakaoLoginRequest;
+import com.fubao.dearbao.api.controller.auth.dto.reqeust.TokenRegenerateRequest;
 import com.fubao.dearbao.api.controller.auth.dto.response.KakaoLoginResponse;
+import com.fubao.dearbao.api.controller.auth.dto.response.TokenRegenerateResponse;
 import com.fubao.dearbao.api.service.auth.AuthService;
 import com.fubao.dearbao.global.common.exception.ResponseCode;
 import com.fubao.dearbao.global.common.response.DataResponse;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -44,4 +47,10 @@ public class AuthController {
         authService.initMember(request.toServiceDto(memberId));
         return ResponseEntity.ok(DataResponse.of(ResponseCode.OK));
     }
+
+    @PostMapping("/token/refresh")
+    public ResponseEntity<DataResponse<TokenRegenerateResponse>> tokenRegenerate(@Validated @RequestBody TokenRegenerateRequest tokenRegenerateRequest) {
+        return ResponseEntity.ok(DataResponse.of(authService.tokenRegenerate(tokenRegenerateRequest.toServiceDto())));
+    }
+
 }

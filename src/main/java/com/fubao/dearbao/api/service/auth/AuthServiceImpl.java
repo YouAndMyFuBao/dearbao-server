@@ -1,18 +1,24 @@
 package com.fubao.dearbao.api.service.auth;
 
+import com.fubao.dearbao.api.controller.auth.dto.reqeust.TokenRegenerateRequest;
 import com.fubao.dearbao.api.controller.auth.dto.response.KakaoLoginResponse;
+import com.fubao.dearbao.api.controller.auth.dto.response.TokenRegenerateResponse;
 import com.fubao.dearbao.api.service.auth.dto.InitMemberServiceDto;
 import com.fubao.dearbao.api.service.auth.dto.KakaoInfoDto;
 import com.fubao.dearbao.api.service.auth.dto.KakaoLoginServiceDto;
+import com.fubao.dearbao.api.service.auth.dto.RegenerateTokenServiceDto;
 import com.fubao.dearbao.domain.member.Member;
 import com.fubao.dearbao.domain.member.MemberRepository;
 import com.fubao.dearbao.domain.member.MemberState;
 import com.fubao.dearbao.domain.oauth.KakaoApiClient;
 import com.fubao.dearbao.global.common.exception.CustomException;
 import com.fubao.dearbao.global.common.exception.ResponseCode;
+import com.fubao.dearbao.global.common.vo.AuthToken;
 import com.fubao.dearbao.global.config.security.jwt.JwtTokenProvider;
 import com.fubao.dearbao.global.util.RedisUtil;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
@@ -21,16 +27,18 @@ import java.util.Optional;
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
+@Slf4j
 public class AuthServiceImpl implements AuthService {
 
     private final MemberRepository memberRepository;
     private final KakaoApiClient kakaoApiClient;
     private final JwtTokenProvider jwtTokenProvider;
+    private final RedisUtil redisUtil;
 
     @Transactional
     @Override
-    public KakaoLoginResponse kakaoLogin(KakaoLoginServiceDto kakaoLoginServiceDto) {
-        String code = kakaoApiClient.requestAccessToken(kakaoLoginServiceDto);
+    public KakaoLoginResponse kakaoLogin(KakaoLoginServiceDto dto) {
+        String code = kakaoApiClient.requestAccessToken(dto);
         KakaoInfoDto kakaoInfoDto = kakaoApiClient.requestOAuthInfo(code);
         Member member = findOrCreateMember(kakaoInfoDto);
         return jwtTokenProvider.createToken(member.getId().toString()).toKakaoLoginResponse();
@@ -38,15 +46,30 @@ public class AuthServiceImpl implements AuthService {
 
     @Transactional
     @Override
-    public void initMember(InitMemberServiceDto serviceDto) {
-        Member member = findMemberById(serviceDto.getMemberId());
-        if (memberRepository.existsByNameAndState(serviceDto.getNickName(), MemberState.ACTIVE)) {
+    public void initMember(InitMemberServiceDto dto) {
+        Member member = findMemberById(dto.getMemberId());
+        if (memberRepository.existsByNameAndState(dto.getNickName(), MemberState.ACTIVE)) {
             throw new CustomException(ResponseCode.EXIST_NICKNAME);
         }
-        if (!member.isPossibleNickname(serviceDto.getNickName())) {
+        if (!member.isPossibleNickname(dto.getNickName())) {
             throw new CustomException(ResponseCode.INVALID_NICKNAME);
         }
-        member.initMember(serviceDto.getNickName(), serviceDto.getTitle());
+        member.initMember(dto.getNickName(), dto.getTitle());
+    }
+
+    @Override
+    public TokenRegenerateResponse tokenRegenerate(RegenerateTokenServiceDto dto) {
+        if (!jwtTokenProvider.validateToken(dto.getRefreshToken(), null)) {
+            throw new CustomException(ResponseCode.INVALID_TOKEN);
+        }
+        if (!redisUtil.hasKey(dto.getRefreshToken())) {
+            throw new CustomException(ResponseCode.INVALID_TOKEN);
+        }
+        redisUtil.deleteData(dto.getRefreshToken());
+        String userName = jwtTokenProvider.getUsernameFromRefreshToken(
+            dto.getRefreshToken());
+        AuthToken authToken = jwtTokenProvider.createToken(userName);
+        return TokenRegenerateResponse.of(authToken);
     }
 
     private Member findMemberById(Long memberId) {
