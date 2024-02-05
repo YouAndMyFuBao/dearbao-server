@@ -6,6 +6,7 @@ import com.fubao.dearbao.api.controller.auth.dto.response.TokenRegenerateRespons
 import com.fubao.dearbao.api.service.auth.dto.InitMemberServiceDto;
 import com.fubao.dearbao.api.service.auth.dto.KakaoInfoDto;
 import com.fubao.dearbao.api.service.auth.dto.KakaoLoginServiceDto;
+import com.fubao.dearbao.api.service.auth.dto.LogoutServiceDto;
 import com.fubao.dearbao.api.service.auth.dto.RegenerateTokenServiceDto;
 import com.fubao.dearbao.domain.member.Member;
 import com.fubao.dearbao.domain.member.MemberRepository;
@@ -70,6 +71,11 @@ public class AuthServiceImpl implements AuthService {
             dto.getRefreshToken());
         AuthToken authToken = jwtTokenProvider.createToken(userName);
         return TokenRegenerateResponse.of(authToken);
+    }
+
+    @Override
+    public void logout(LogoutServiceDto dto) {
+        redisUtil.deleteData(dto.getRefreshToken());
     }
 
     private Member findMemberById(Long memberId) {
