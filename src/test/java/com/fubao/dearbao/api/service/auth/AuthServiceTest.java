@@ -6,6 +6,7 @@ import com.fubao.dearbao.api.controller.auth.dto.response.TokenRegenerateRespons
 import com.fubao.dearbao.api.service.auth.dto.InitMemberServiceDto;
 import com.fubao.dearbao.api.service.auth.dto.KakaoInfoDto;
 import com.fubao.dearbao.api.service.auth.dto.KakaoLoginServiceDto;
+import com.fubao.dearbao.api.service.auth.dto.LogoutServiceDto;
 import com.fubao.dearbao.api.service.auth.dto.RegenerateTokenServiceDto;
 import com.fubao.dearbao.domain.member.Member;
 import com.fubao.dearbao.domain.member.MemberGender;
@@ -197,10 +198,11 @@ class AuthServiceTest extends IntegrationTestSupport {
         given(redisUtil.hasKey(dto.getRefreshToken()))
             .willReturn(true);
         //when
-       TokenRegenerateResponse response = authService.tokenRegenerate(dto);
+        TokenRegenerateResponse response = authService.tokenRegenerate(dto);
         //then
         assertThat(response).isNotNull();
     }
+
     @DisplayName("token을 재생성할때 잘못된 refresh token일 경우 예외가 발생한다.")
     @Test
     void tokenRegenerateWithInvalidRefreshToken() {
@@ -211,11 +213,12 @@ class AuthServiceTest extends IntegrationTestSupport {
         given(redisUtil.hasKey(dto.getRefreshToken()))
             .willReturn(true);
         //when
-        assertThatThrownBy(()->authService.tokenRegenerate(dto))
+        assertThatThrownBy(() -> authService.tokenRegenerate(dto))
             .isInstanceOf(CustomException.class)
             .extracting("responseCode")
             .isEqualTo(ResponseCode.INVALID_TOKEN);
     }
+
     @DisplayName("token을 재생성할때 cache에 refresh token이 없다면 예외가 발생한다.")
     @Test
     void tokenRegenerateWithoutRefreshTokenNotInCache() {
@@ -226,10 +229,22 @@ class AuthServiceTest extends IntegrationTestSupport {
         given(redisUtil.hasKey(dto.getRefreshToken()))
             .willReturn(false);
         //when
-        assertThatThrownBy(()->authService.tokenRegenerate(dto))
+        assertThatThrownBy(() -> authService.tokenRegenerate(dto))
             .isInstanceOf(CustomException.class)
             .extracting("responseCode")
             .isEqualTo(ResponseCode.INVALID_TOKEN);
+    }
+
+    @DisplayName("로그아웃을 한다.")
+    @Test
+    void logout() {
+        //given
+        String refreshToken = "refreshToken";
+        LogoutServiceDto dto = LogoutServiceDto.of(refreshToken);
+
+        //when
+        authService.logout(dto);
+
     }
 
     private Member createMember(String providerId) {
@@ -249,7 +264,8 @@ class AuthServiceTest extends IntegrationTestSupport {
             .providerId(providerId)
             .build();
     }
-    private AuthToken createToken(long id){
+
+    private AuthToken createToken(long id) {
         return jwtTokenProvider.createToken(String.valueOf(id));
     }
 }
