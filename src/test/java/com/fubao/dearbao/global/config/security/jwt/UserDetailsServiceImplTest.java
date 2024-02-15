@@ -38,7 +38,7 @@ class UserDetailsServiceImplTest extends IntegrationTestSupport {
         assertThat(userDetails)
             .extracting("username", "authorities")
             .contains(String.valueOf(member.getId()),
-                Collections.singleton(new SimpleGrantedAuthority(member.getRole().getName())));
+                Collections.singleton(new SimpleGrantedAuthority(String.valueOf(member.getRole()))));
     }
 
     @DisplayName("유저를 조회하지만 존재하지 않으면 null을 반환한다.")

@@ -16,8 +16,9 @@ public enum ResponseCode {
     NOT_GET_KAKAO_INFO("MEM-ERR-001", HttpStatus.BAD_REQUEST, "카카오 정보를 가져오는데 실패했습니다."),
     NOT_FOUND_MEMBER("MEM-ERR-002", HttpStatus.NOT_FOUND, "유저를 찾을 수 없습니다."),
     INVALID_NICKNAME("MEM-ERR-003", HttpStatus.BAD_REQUEST, "유효하지 않은 닉네임입니다."),
-    EXIST_NICKNAME("MEM-ERR-004",HttpStatus.CONFLICT , "이미 사용중인 닉네임입니다."),
-    //post
+    EXIST_NICKNAME("MEM-ERR-004", HttpStatus.CONFLICT, "이미 사용중인 닉네임입니다."),
+    //mission
+    NOT_FOUND_MISSION("MISSION-ERR-001", HttpStatus.NOT_FOUND,"미션을 찾을 수 없습니다."),
 
     //GLOBAL
     BAD_REQUEST("GLB-ERR-001", HttpStatus.BAD_REQUEST, "잘못된 요청입니다."),

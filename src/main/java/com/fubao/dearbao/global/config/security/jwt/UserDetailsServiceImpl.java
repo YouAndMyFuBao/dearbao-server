@@ -29,8 +29,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
             throw new UsernameNotFoundException(username);
         }
         UserDetails user = new UserDetailsImpl(optionalMember.get());
-        log.info(user.toString());
-        log.info(MemberRole.ROLE_GUEST.getName());
+        System.out.println(user.getAuthorities());
         return User.withUsername(user.getUsername())
             .password(user.getPassword())
             .authorities(user.getAuthorities())

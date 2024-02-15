@@ -1,6 +1,5 @@
 package com.fubao.dearbao.api.controller.auth;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fubao.dearbao.ControllerTestSupport;
 import com.fubao.dearbao.api.controller.auth.dto.reqeust.InitMemberRequest;
 import com.fubao.dearbao.api.controller.auth.dto.reqeust.KakaoLoginRequest;
@@ -85,9 +84,9 @@ class AuthControllerTest extends ControllerTestSupport {
         LogoutRequest request = LogoutRequest.of(refreshToken);
         //when then
         mockMvc.perform(
-            post("/api/v1/auth/logout")
-                .content(objectMapper.writeValueAsString(request))
-                .contentType(MediaType.APPLICATION_JSON).with(csrf())
+                post("/api/v1/auth/logout")
+                    .content(objectMapper.writeValueAsString(request))
+                    .contentType(MediaType.APPLICATION_JSON).with(csrf())
             )
             .andExpect(status().isOk())
             .andExpectAll(
