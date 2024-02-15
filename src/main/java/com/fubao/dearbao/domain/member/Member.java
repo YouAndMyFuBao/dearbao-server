@@ -19,10 +19,9 @@ import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.List;
 
-@Entity
+@Entity(name = "member")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
-@ToString
 public class Member extends BaseEntity {
 
     @Id

@@ -12,14 +12,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 class MemberRepositoryTest extends IntegrationTestSupport {
 
-    @Autowired
-    private MemberRepository memberRepository;
-
-    @AfterEach
-    void tearDown() {
-        memberRepository.deleteAllInBatch();
-    }
-
     @DisplayName("소셜 로그인의 provider의 id를 가진 member를 조회한다.")
     @Test
     void findByProviderIdAndState() {

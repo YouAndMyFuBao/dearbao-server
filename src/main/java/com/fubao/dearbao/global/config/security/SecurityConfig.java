@@ -36,6 +36,11 @@ public class SecurityConfig {
     private final String[] GUEST_URLS = {
         "/api/v1/auth/init"
     };
+    private final String[] GET_MEMBER_URLS = {
+        "/api/v1/mission"
+    };
+    private final String[] POST_MEMBER_URLS = {
+    };
     private final String[] GET_PERMITTED_URLS = {
         "/api/v1/auth/kakao/code","/"
     };
@@ -68,6 +73,8 @@ public class SecurityConfig {
             )
             .authorizeHttpRequests(request -> request
                 .requestMatchers(HttpMethod.GET, GUEST_URLS).hasRole(MemberRole.ROLE_GUEST.getName())
+                .requestMatchers(HttpMethod.GET, GET_MEMBER_URLS).hasRole(MemberRole.ROLE_MEMBER.getName())
+                .requestMatchers(HttpMethod.POST, POST_MEMBER_URLS).hasRole(MemberRole.ROLE_MEMBER.getName())
                 .requestMatchers(HttpMethod.GET, GET_PERMITTED_URLS).permitAll()
                 .requestMatchers(HttpMethod.POST, POST_PERMITTED_URLS).permitAll()
                 .anyRequest().authenticated()

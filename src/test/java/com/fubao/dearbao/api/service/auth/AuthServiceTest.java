@@ -39,17 +39,11 @@ class AuthServiceTest extends IntegrationTestSupport {
     private AuthService authService;
     @MockBean
     private KakaoApiClient kakaoApiClient;
-    @Autowired
-    private MemberRepository memberRepository;
     @MockBean
     private RedisUtil redisUtil;
     @Autowired
     private JwtTokenProvider jwtTokenProvider;
 
-    @BeforeEach
-    void tearDown() {
-        memberRepository.deleteAllInBatch();
-    }
 
     @DisplayName("회원가입을 진행한다. 유저가 존재하여 유저를 새로 생성하지 않고 jwt를 발급한다.")
     @Test
