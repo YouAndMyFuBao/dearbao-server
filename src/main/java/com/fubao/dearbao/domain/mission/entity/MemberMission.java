@@ -42,4 +42,8 @@ public class MemberMission extends BaseEntity {
         this.mission = mission;
         this.state = state;
     }
+
+    public void setEnd() {
+        this.state = MemberMissionState.END;
+    }
 }

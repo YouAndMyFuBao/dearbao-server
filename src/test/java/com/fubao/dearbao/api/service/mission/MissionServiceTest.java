@@ -2,27 +2,28 @@ package com.fubao.dearbao.api.service.mission;
 
 import com.fubao.dearbao.IntegrationTestSupport;
 import com.fubao.dearbao.api.controller.mission.dto.response.DailyMessageResponse;
-import com.fubao.dearbao.api.controller.mission.dto.response.DailyMissionBaseResponse;
 import com.fubao.dearbao.api.controller.mission.dto.response.DailyMissionResponse;
 import com.fubao.dearbao.domain.member.Member;
 import com.fubao.dearbao.domain.member.MemberGender;
-import com.fubao.dearbao.domain.member.MemberRepository;
 import com.fubao.dearbao.domain.member.MemberRole;
 import com.fubao.dearbao.domain.member.MemberState;
-import com.fubao.dearbao.domain.mission.MemberMissionRepository;
-import com.fubao.dearbao.domain.mission.MissionRepository;
 import com.fubao.dearbao.domain.mission.entity.MemberMission;
 import com.fubao.dearbao.domain.mission.entity.MemberMissionState;
 import com.fubao.dearbao.domain.mission.entity.Mission;
 import com.fubao.dearbao.domain.mission.entity.MissionState;
-import org.junit.jupiter.api.BeforeEach;
+import com.fubao.dearbao.global.common.exception.CustomException;
+import com.fubao.dearbao.global.common.exception.ResponseCode;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 class MissionServiceTest extends IntegrationTestSupport {
 
@@ -35,9 +36,11 @@ class MissionServiceTest extends IntegrationTestSupport {
         LocalDateTime today = LocalDateTime.of(todayDate, todayTime);
         Member member = memberRepository.save(createMember("001", "peter", MemberGender.MALE));
         missionRepository.save(createMission(todayDate, MissionState.ACTIVE));
+
         //when
         DailyMissionResponse response = (DailyMissionResponse) missionService.dailyMission(
             member.getId(), today);
+
         //then
         assertThat(response)
             .extracting("isMissionSuccess", "isMessageOpenTime", "nickname", "remainingTime")
@@ -54,9 +57,11 @@ class MissionServiceTest extends IntegrationTestSupport {
         Member member = memberRepository.save(createMember("001", "peter", MemberGender.MALE));
         Mission mission = missionRepository.save(createMission(todayDate, MissionState.ACTIVE));
         memberMissionRepository.save(createMemberMission(member, mission));
+
         //when
         DailyMissionResponse response = (DailyMissionResponse) missionService.dailyMission(
             member.getId(), today);
+
         //then
         assertThat(response)
             .extracting("isMissionSuccess", "isMessageOpenTime", "nickname", "remainingTime")
@@ -72,9 +77,11 @@ class MissionServiceTest extends IntegrationTestSupport {
         LocalDateTime today = LocalDateTime.of(todayDate, todayTime);
         Member member = memberRepository.save(createMember("001", "peter", MemberGender.MALE));
         Mission mission = missionRepository.save(createMission(todayDate, MissionState.ACTIVE));
+
         //when
         DailyMessageResponse response = (DailyMessageResponse) missionService.dailyMission(
             member.getId(), today);
+
         //then
         assertThat(response)
             .extracting("isMissionSuccess", "isMessageOpenTime", "nickname", "message")
@@ -91,13 +98,60 @@ class MissionServiceTest extends IntegrationTestSupport {
         Member member = memberRepository.save(createMember("001", "peter", MemberGender.MALE));
         Mission mission = missionRepository.save(createMission(todayDate, MissionState.ACTIVE));
         memberMissionRepository.save(createMemberMission(member, mission));
+
         //when
         DailyMessageResponse response = (DailyMessageResponse) missionService.dailyMission(
             member.getId(), today);
+
         //then
         assertThat(response)
             .extracting("isMissionSuccess", "isMessageOpenTime", "nickname", "message")
             .contains(true, true, member.getName(), mission.getAnswer());
+    }
+
+    @DisplayName("데일리 미션을 세팅한다.")
+    @Test
+    void setDailyMission() {
+        //given
+        Mission nowMission = createMission(LocalDate.of(2023, 11, 11), MissionState.ACTIVE);
+        Mission nextMission = createMission(LocalDate.of(2023, 11, 11), MissionState.INACTIVE);
+        Member member = memberRepository.save(createMember("001", "peter", MemberGender.MALE));
+        List<Mission> missions = missionRepository.saveAll(List.of(nowMission, nextMission));
+        memberMissionRepository.save(createMemberMission(member, missions.get(0)));
+
+        //when
+        missionService.setDailyMission();
+
+        //then
+        List<Mission> savedMissions = missionRepository.findAll();
+        List<MemberMission> memberMissions = memberMissionRepository.findAll();
+        assertThat(memberMissions).hasSize(1)
+            .extracting("state").contains(MemberMissionState.END);
+        assertThat(savedMissions).hasSize(2)
+            .extracting("id", "state")
+            .containsExactlyInAnyOrder(
+                tuple(missions.get(0).getId(), MissionState.END),
+                tuple(missions.get(1).getId(), MissionState.ACTIVE)
+            );
+    }
+
+    @DisplayName("데일리 미션을 세팅할때 남은 미션이 없을 경우 예외가 발생하고 슬랙 메세지를 보낸다.")
+    @Test
+    void setDailyMissionWithoutValidMission() {
+        //given
+        Mission nowMission = createMission(LocalDate.of(2023, 11, 11), MissionState.END);
+        Mission nextMission = createMission(LocalDate.of(2023, 11, 11), MissionState.ACTIVE);
+        Member member = memberRepository.save(createMember("001", "peter", MemberGender.MALE));
+        List<Mission> missions = missionRepository.saveAll(List.of(nowMission, nextMission));
+        memberMissionRepository.save(createMemberMission(member, missions.get(0)));
+
+        //when then
+        assertThatThrownBy(() -> missionService.setDailyMission())
+            .isInstanceOf(CustomException.class)
+            .extracting("responseCode")
+            .isEqualTo(ResponseCode.NOT_FOUND_VALID_MISSION_FOR_SET_DAILY_MISSION);
+        verify(slackWebhookUtil).slackNotificationServerError(
+            ResponseCode.NOT_FOUND_VALID_MISSION_FOR_SET_DAILY_MISSION);
     }
 
     private MemberMission createMemberMission(Member member, Mission mission) {

@@ -8,6 +8,7 @@ import com.fubao.dearbao.domain.member.MemberRepository;
 import com.fubao.dearbao.domain.member.MemberState;
 import com.fubao.dearbao.domain.mission.MemberMissionRepository;
 import com.fubao.dearbao.domain.mission.MissionRepository;
+import com.fubao.dearbao.domain.mission.entity.MemberMission;
 import com.fubao.dearbao.domain.mission.entity.MemberMissionState;
 import com.fubao.dearbao.domain.mission.entity.Mission;
 import com.fubao.dearbao.domain.mission.entity.MissionState;
@@ -15,21 +16,27 @@ import com.fubao.dearbao.global.common.exception.CustomException;
 import com.fubao.dearbao.global.common.exception.ResponseCode;
 import com.fubao.dearbao.global.common.vo.MissionTime;
 import com.fubao.dearbao.global.util.DateUtil;
+import com.fubao.dearbao.global.util.SlackWebhookUtil;
 import lombok.RequiredArgsConstructor;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.List;
+import java.util.Random;
 
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class MissionServiceImpl implements MissionService {
 
     private final MemberRepository memberRepository;
     private final MemberMissionRepository memberMissionRepository;
     private final MissionRepository missionRepository;
     private final DateUtil dateUtil;
-
+    private final SlackWebhookUtil slackWebhookUtil;
     @Override
     public DailyMissionBaseResponse dailyMission(Long memberId, LocalDateTime localDateTime) {
         Member member = findMemberById(memberId);
@@ -58,8 +65,41 @@ public class MissionServiceImpl implements MissionService {
             dateUtil.toResponseTimeFormat(MissionTime.PM.getTime()));
     }
 
+    //추후 quartz로 변경
+    @Transactional
+    @Scheduled(cron = "00 52 01 * * *") // 매일 8시 59분 59초마다 실행
+    public void setDailyMission() {
+        Mission todayMission = findActiveMission();
+        List<Mission> missionList = findInActiveMission();
+        missionSetting(todayMission, missionList);
+        deleteMemberMissionByTodayMission(todayMission);
+    }
+
+    private void deleteMemberMissionByTodayMission(Mission todayMission) {
+        List<MemberMission> memberMissions = memberMissionRepository.findAllByMissionId(
+            todayMission.getId());
+        memberMissions.forEach(
+            MemberMission::setEnd
+        );
+    }
+
+    private void missionSetting(Mission todayMission, List<Mission> missionList) {
+        Random random = new Random();
+        int randomIndex = random.nextInt(missionList.size());
+        Mission nextMission = missionList.get(randomIndex);
+        nextMission.setActive(LocalDate.now());
+        todayMission.setEnd();
+    }
+
     private Mission findTodayMission(LocalDate now) {
         return missionRepository.findByOpenAtAndState(now, MissionState.ACTIVE)
+            .orElseThrow(
+                () -> new CustomException(ResponseCode.NOT_FOUND_MISSION)
+            );
+    }
+
+    private Mission findActiveMission() {
+        return missionRepository.findByState(MissionState.ACTIVE)
             .orElseThrow(
                 () -> new CustomException(ResponseCode.NOT_FOUND_MISSION)
             );
@@ -79,6 +119,15 @@ public class MissionServiceImpl implements MissionService {
             .orElseThrow(
                 () -> new CustomException(ResponseCode.NOT_FOUND_MEMBER)
             );
+    }
+
+    private List<Mission> findInActiveMission() {
+        List<Mission> missions= missionRepository.findAllByState(MissionState.INACTIVE);
+        if(missions.isEmpty()) {
+            slackWebhookUtil.slackNotificationServerError(ResponseCode.NOT_FOUND_VALID_MISSION_FOR_SET_DAILY_MISSION);
+            throw new CustomException(ResponseCode.NOT_FOUND_VALID_MISSION_FOR_SET_DAILY_MISSION);
+        }
+        return missions;
     }
 
 }
