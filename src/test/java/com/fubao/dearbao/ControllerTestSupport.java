@@ -3,8 +3,10 @@ package com.fubao.dearbao;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fubao.dearbao.api.controller.auth.AuthController;
 import com.fubao.dearbao.api.controller.healthcheck.HealthCheckController;
+import com.fubao.dearbao.api.controller.member.MemberController;
 import com.fubao.dearbao.api.controller.mission.MissionController;
 import com.fubao.dearbao.api.service.auth.AuthService;
+import com.fubao.dearbao.api.service.member.MemberService;
 import com.fubao.dearbao.api.service.mission.MissionService;
 import com.fubao.dearbao.global.util.SlackWebhookUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,7 +21,8 @@ import org.springframework.test.web.servlet.MockMvc;
 @WebMvcTest(controllers = {
     AuthController.class,
     HealthCheckController.class,
-    MissionController.class
+    MissionController.class,
+    MemberController.class
 })
 @WithMockUser
 public abstract class ControllerTestSupport {
@@ -40,5 +43,5 @@ public abstract class ControllerTestSupport {
     protected MissionService missionService;
 
     @MockBean
-    protected SecurityContextHolder securityContextHolder;
+    protected MemberService memberService;
 }
