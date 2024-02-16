@@ -37,10 +37,11 @@ public class MissionServiceImpl implements MissionService {
     private final MissionRepository missionRepository;
     private final DateUtil dateUtil;
     private final SlackWebhookUtil slackWebhookUtil;
+
     @Override
     public DailyMissionBaseResponse dailyMission(Long memberId, LocalDateTime localDateTime) {
         Member member = findMemberById(memberId);
-        Mission mission = findTodayMission(localDateTime.toLocalDate());
+        Mission mission = findActiveMission();
         boolean isMessageOpenTime = isMessageOpenTime(localDateTime.toLocalTime());
         boolean isMissionSuccess = isSuccess(memberId);
         DailyMissionBaseResponse baseResponse = DailyMissionBaseResponse.of(isMissionSuccess,
@@ -67,7 +68,7 @@ public class MissionServiceImpl implements MissionService {
 
     //추후 quartz로 변경
     @Transactional
-    @Scheduled(cron = "00 52 01 * * *") // 매일 8시 59분 59초마다 실행
+    @Scheduled(cron = "00 00 09 * * *") // 매일 9시 00분 0초마다 실행
     public void setDailyMission() {
         Mission todayMission = findActiveMission();
         List<Mission> missionList = findInActiveMission();
@@ -89,13 +90,6 @@ public class MissionServiceImpl implements MissionService {
         Mission nextMission = missionList.get(randomIndex);
         nextMission.setActive(LocalDate.now());
         todayMission.setEnd();
-    }
-
-    private Mission findTodayMission(LocalDate now) {
-        return missionRepository.findByOpenAtAndState(now, MissionState.ACTIVE)
-            .orElseThrow(
-                () -> new CustomException(ResponseCode.NOT_FOUND_MISSION)
-            );
     }
 
     private Mission findActiveMission() {
@@ -122,9 +116,10 @@ public class MissionServiceImpl implements MissionService {
     }
 
     private List<Mission> findInActiveMission() {
-        List<Mission> missions= missionRepository.findAllByState(MissionState.INACTIVE);
-        if(missions.isEmpty()) {
-            slackWebhookUtil.slackNotificationServerError(ResponseCode.NOT_FOUND_VALID_MISSION_FOR_SET_DAILY_MISSION);
+        List<Mission> missions = missionRepository.findAllByState(MissionState.INACTIVE);
+        if (missions.isEmpty()) {
+            slackWebhookUtil.slackNotificationServerError(
+                ResponseCode.NOT_FOUND_VALID_MISSION_FOR_SET_DAILY_MISSION);
             throw new CustomException(ResponseCode.NOT_FOUND_VALID_MISSION_FOR_SET_DAILY_MISSION);
         }
         return missions;
