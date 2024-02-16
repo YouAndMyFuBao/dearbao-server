@@ -68,7 +68,7 @@ public class MissionServiceImpl implements MissionService {
 
     //추후 quartz로 변경
     @Transactional
-    @Scheduled(cron = "00 52 01 * * *") // 매일 8시 59분 59초마다 실행
+    @Scheduled(cron = "00 00 09 * * *") // 매일 9시 00분 0초마다 실행
     public void setDailyMission() {
         Mission todayMission = findActiveMission();
         List<Mission> missionList = findInActiveMission();
