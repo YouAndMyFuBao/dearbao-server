@@ -1,6 +1,5 @@
 package com.fubao.dearbao.api.service.auth;
 
-import com.fubao.dearbao.api.controller.auth.dto.reqeust.TokenRegenerateRequest;
 import com.fubao.dearbao.api.controller.auth.dto.response.KakaoLoginResponse;
 import com.fubao.dearbao.api.controller.auth.dto.response.TokenRegenerateResponse;
 import com.fubao.dearbao.api.service.auth.dto.InitMemberServiceDto;
@@ -17,13 +16,10 @@ import com.fubao.dearbao.global.common.exception.ResponseCode;
 import com.fubao.dearbao.global.common.vo.AuthToken;
 import com.fubao.dearbao.global.config.security.jwt.JwtTokenProvider;
 import com.fubao.dearbao.global.util.RedisUtil;
-import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import java.time.LocalDateTime;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -42,7 +38,8 @@ public class AuthServiceImpl implements AuthService {
         String code = kakaoApiClient.requestAccessToken(dto);
         KakaoInfoDto kakaoInfoDto = kakaoApiClient.requestOAuthInfo(code);
         Member member = findOrCreateMember(kakaoInfoDto);
-        return jwtTokenProvider.createToken(member.getId().toString()).toKakaoLoginResponse();
+        AuthToken authToken = jwtTokenProvider.createToken(member.getId().toString());
+        return authToken.toKakaoLoginResponse(member.isInit());
     }
 
     @Transactional

@@ -79,4 +79,8 @@ public class Member extends BaseEntity {
     public boolean isPossibleNickname(String nickName) {
         return nickName.length() >= 2 && nickName.length() <= 8;
     }
+
+    public boolean isInit() {
+        return role.equals(MemberRole.ROLE_MEMBER);
+    }
 }

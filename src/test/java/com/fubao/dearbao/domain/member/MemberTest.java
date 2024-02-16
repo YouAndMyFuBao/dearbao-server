@@ -39,7 +39,7 @@ class MemberTest extends IntegrationTestSupport {
         //given
         String nickname = "peter";
         MemberGender gender = MemberGender.MALE;
-        Member member = createMember("001");
+        Member member = createMember("001", MemberRole.ROLE_GUEST);
         //when
         member.initMember(nickname, gender);
         //then
@@ -52,7 +52,7 @@ class MemberTest extends IntegrationTestSupport {
     @Test
     void isPossibleNicknameSizeLessThan2() {
         //given
-        Member member = createMember("001");
+        Member member = createMember("001", MemberRole.ROLE_GUEST);
         String nickname = "1";
         //when
         boolean result = member.isPossibleNickname(nickname);
@@ -64,7 +64,7 @@ class MemberTest extends IntegrationTestSupport {
     @Test
     void isPossibleNicknameSizeMoreThan8() {
         //given
-        Member member = createMember("001");
+        Member member = createMember("001", MemberRole.ROLE_GUEST);
         String nickname = "123456789";
         //when
         boolean result = member.isPossibleNickname(nickname);
@@ -72,11 +72,33 @@ class MemberTest extends IntegrationTestSupport {
         assertThat(result).isFalse();
     }
 
-    private Member createMember(String providerId) {
+    @DisplayName("멤버가 profile init을 안했으면 false를 리턴한다.")
+    @Test
+    void isInitWithGuest() {
+        //given
+        Member member = createMember("001", MemberRole.ROLE_GUEST);
+        //when
+        boolean result = member.isInit();
+        //then
+        assertThat(result).isFalse();
+    }
+
+    @DisplayName("멤버가 profile init을 했으면 true를 리턴한다.")
+    @Test
+    void isInitWithMember() {
+        //given
+        Member member = createMember("001", MemberRole.ROLE_MEMBER);
+        //when
+        boolean result = member.isInit();
+        //then
+        assertThat(result).isTrue();
+    }
+
+    private Member createMember(String providerId, MemberRole memberRole) {
         return Member.builder()
             .providerId(providerId)
             .state(MemberState.ACTIVE)
-            .role(MemberRole.ROLE_GUEST)
+            .role(memberRole)
             .build();
     }
 }

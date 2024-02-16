@@ -52,7 +52,7 @@ class AuthServiceTest extends IntegrationTestSupport {
         String code = "code";
         String accessToken = "token";
         String providerId = "id";
-        Member member = createMember(providerId);
+        Member member = createMember(providerId, MemberRole.ROLE_GUEST);
         memberRepository.save(member);
         KakaoLoginServiceDto kakaoLoginServiceDto = KakaoLoginServiceDto.of(code);
         given(kakaoApiClient.requestAccessToken(any(KakaoLoginServiceDto.class)))
@@ -64,7 +64,8 @@ class AuthServiceTest extends IntegrationTestSupport {
         KakaoLoginResponse response = authService.kakaoLogin(kakaoLoginServiceDto);
 
         //then
-        assertThat(response).isNotNull();
+        assertThat(response).isNotNull()
+            .extracting("isInitProfile").isEqualTo(false);
 
         List<Member> members = memberRepository.findAll();
         assertThat(members).hasSize(1)
@@ -90,7 +91,36 @@ class AuthServiceTest extends IntegrationTestSupport {
         KakaoLoginResponse response = authService.kakaoLogin(kakaoLoginServiceDto);
 
         //then
-        assertThat(response).isNotNull();
+        assertThat(response).isNotNull()
+            .extracting("isInitProfile").isEqualTo(false);
+
+        List<Member> members = memberRepository.findAll();
+        assertThat(members).hasSize(1)
+            .extracting("providerId")
+            .contains(providerId);
+    }
+
+    @DisplayName("로그인을 진행할때 init한 유저일 경우 true를 리턴한다.")
+    @Test
+    void kakaoLoginWithInitUser() {
+        //given
+        String code = "code";
+        String accessToken = "token";
+        String providerId = "001";
+        Member member = createMemberWithInit(providerId, MemberRole.ROLE_MEMBER);
+        memberRepository.save(member);
+        KakaoLoginServiceDto kakaoLoginServiceDto = KakaoLoginServiceDto.of(code);
+        given(kakaoApiClient.requestAccessToken(any(KakaoLoginServiceDto.class)))
+            .willReturn(accessToken);
+        given(kakaoApiClient.requestOAuthInfo(accessToken))
+            .willReturn(new KakaoInfoDto(providerId));
+
+        //when
+        KakaoLoginResponse response = authService.kakaoLogin(kakaoLoginServiceDto);
+
+        //then
+        assertThat(response).isNotNull()
+            .extracting("isInitProfile").isEqualTo(true);
 
         List<Member> members = memberRepository.findAll();
         assertThat(members).hasSize(1)
@@ -102,7 +132,7 @@ class AuthServiceTest extends IntegrationTestSupport {
     @Test
     void initMember() {
         //given
-        Member member = createMember("001");
+        Member member = createMember("001", MemberRole.ROLE_GUEST);
         Member savedMember = memberRepository.save(member);
         Long memberId = savedMember.getId();
         String nickname = "peter";
@@ -126,7 +156,7 @@ class AuthServiceTest extends IntegrationTestSupport {
     @Test
     void initMemberWhenExistNickname() {
         //given
-        Member member = createMember("001");
+        Member member = createMember("001", MemberRole.ROLE_GUEST);
         Member savedMember = memberRepository.save(member);
 
         Long memberId = savedMember.getId();
@@ -148,7 +178,7 @@ class AuthServiceTest extends IntegrationTestSupport {
     @Test
     void initMemberWithNicknameLessThan2() {
         //given
-        Member member = createMember("001");
+        Member member = createMember("001", MemberRole.ROLE_GUEST);
         Member savedMember = memberRepository.save(member);
         Long memberId = savedMember.getId();
         String nickname = "1";
@@ -167,7 +197,7 @@ class AuthServiceTest extends IntegrationTestSupport {
     @Test
     void initMemberWithNicknameMoreThan8() {
         //given
-        Member member = createMember("001");
+        Member member = createMember("001", MemberRole.ROLE_GUEST);
         Member savedMember = memberRepository.save(member);
         Long memberId = savedMember.getId();
         String nickname = "123456789";
@@ -241,10 +271,20 @@ class AuthServiceTest extends IntegrationTestSupport {
 
     }
 
-    private Member createMember(String providerId) {
+    private Member createMember(String providerId, MemberRole memberRole) {
         return Member.builder()
             .state(MemberState.ACTIVE)
-            .role(MemberRole.ROLE_GUEST)
+            .role(memberRole)
+            .providerId(providerId)
+            .build();
+    }
+
+    private Member createMemberWithInit(String providerId, MemberRole memberRole) {
+        return Member.builder()
+            .name("동석")
+            .gender(MemberGender.MALE)
+            .state(MemberState.ACTIVE)
+            .role(memberRole)
             .providerId(providerId)
             .build();
     }
