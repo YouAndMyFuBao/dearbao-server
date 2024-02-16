@@ -25,7 +25,7 @@ public class AuthToken {
             .build();
     }
 
-    public KakaoLoginResponse toKakaoLoginResponse() {
-        return KakaoLoginResponse.of(accessToken,refreshToken);
+    public KakaoLoginResponse toKakaoLoginResponse(boolean isInitProfile) {
+        return KakaoLoginResponse.of(accessToken,refreshToken,isInitProfile);
     }
 }
