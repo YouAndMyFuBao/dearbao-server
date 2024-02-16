@@ -13,6 +13,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -35,6 +36,28 @@ class MemberMissionRepositoryTest extends IntegrationTestSupport {
         assertThat(memberMissionOptional.get().getMember().getId()).isEqualTo(member.getId());
         assertThat(memberMissionOptional.get().getMission().getId()).isEqualTo(mission.getId());
         assertThat(memberMissionOptional.get().getState()).isEqualTo(MemberMissionState.ACTIVE);
+    }
+
+    @DisplayName("특정 미션 아이디를 가진 멤버미션을 모두 조회한다.")
+    @Test
+    void findAllByMissionId() {
+        //given
+        LocalDate date = LocalDate.of(2023, 11, 11);
+        Member member1 = createMember("1", "동석", MemberGender.MALE);
+        Member member2 = createMember("1", "동석2", MemberGender.MALE);
+        Mission mission = missionRepository.save(createMission(date, MissionState.ACTIVE));
+        List<Member> members = memberRepository.saveAll(List.of(member1, member2));
+        List<MemberMission> memberMissions = memberMissionRepository.saveAll(List.of(
+            createMemberMission(members.get(0), mission),
+            createMemberMission(members.get(1), mission))
+        );
+        //when
+        List<MemberMission> savedMemberMissions = memberMissionRepository.findAllByMissionId(
+            mission.getId());
+        //then
+        assertThat(savedMemberMissions).hasSize(2)
+            .extracting("id")
+            .contains(memberMissions.get(0).getId(), memberMissions.get(1).getId());
     }
 
     private Member createMember(String providerId, String nickname, MemberGender title) {

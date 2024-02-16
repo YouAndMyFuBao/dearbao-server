@@ -19,6 +19,7 @@ public enum ResponseCode {
     EXIST_NICKNAME("MEM-ERR-004", HttpStatus.CONFLICT, "이미 사용중인 닉네임입니다."),
     //mission
     NOT_FOUND_MISSION("MISSION-ERR-001", HttpStatus.NOT_FOUND,"미션을 찾을 수 없습니다."),
+    NOT_FOUND_VALID_MISSION_FOR_SET_DAILY_MISSION("MISSION-ERR-999",HttpStatus.NOT_FOUND ,"데일리 미션을 생성할 수 있는 미션이 없습니다."),
 
     //GLOBAL
     BAD_REQUEST("GLB-ERR-001", HttpStatus.BAD_REQUEST, "잘못된 요청입니다."),

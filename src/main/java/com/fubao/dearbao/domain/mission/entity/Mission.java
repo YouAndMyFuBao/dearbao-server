@@ -36,4 +36,13 @@ public class Mission extends BaseEntity {
         this.state = state;
         this.openAt = openAt;
     }
+
+    public void setActive(LocalDate date) {
+        this.openAt = date;
+        this.state = MissionState.ACTIVE;
+    }
+
+    public void setEnd() {
+        this.state = MissionState.END;
+    }
 }
