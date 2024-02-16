@@ -37,10 +37,11 @@ public class MissionServiceImpl implements MissionService {
     private final MissionRepository missionRepository;
     private final DateUtil dateUtil;
     private final SlackWebhookUtil slackWebhookUtil;
+
     @Override
     public DailyMissionBaseResponse dailyMission(Long memberId, LocalDateTime localDateTime) {
         Member member = findMemberById(memberId);
-        Mission mission = findTodayMission(localDateTime.toLocalDate());
+        Mission mission = findActiveMission();
         boolean isMessageOpenTime = isMessageOpenTime(localDateTime.toLocalTime());
         boolean isMissionSuccess = isSuccess(memberId);
         DailyMissionBaseResponse baseResponse = DailyMissionBaseResponse.of(isMissionSuccess,
@@ -91,13 +92,6 @@ public class MissionServiceImpl implements MissionService {
         todayMission.setEnd();
     }
 
-    private Mission findTodayMission(LocalDate now) {
-        return missionRepository.findByOpenAtAndState(now, MissionState.ACTIVE)
-            .orElseThrow(
-                () -> new CustomException(ResponseCode.NOT_FOUND_MISSION)
-            );
-    }
-
     private Mission findActiveMission() {
         return missionRepository.findByState(MissionState.ACTIVE)
             .orElseThrow(
@@ -122,9 +116,10 @@ public class MissionServiceImpl implements MissionService {
     }
 
     private List<Mission> findInActiveMission() {
-        List<Mission> missions= missionRepository.findAllByState(MissionState.INACTIVE);
-        if(missions.isEmpty()) {
-            slackWebhookUtil.slackNotificationServerError(ResponseCode.NOT_FOUND_VALID_MISSION_FOR_SET_DAILY_MISSION);
+        List<Mission> missions = missionRepository.findAllByState(MissionState.INACTIVE);
+        if (missions.isEmpty()) {
+            slackWebhookUtil.slackNotificationServerError(
+                ResponseCode.NOT_FOUND_VALID_MISSION_FOR_SET_DAILY_MISSION);
             throw new CustomException(ResponseCode.NOT_FOUND_VALID_MISSION_FOR_SET_DAILY_MISSION);
         }
         return missions;
