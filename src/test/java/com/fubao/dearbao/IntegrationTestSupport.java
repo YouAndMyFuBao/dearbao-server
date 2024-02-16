@@ -1,5 +1,6 @@
 package com.fubao.dearbao;
 
+import com.fubao.dearbao.api.service.member.MemberService;
 import com.fubao.dearbao.api.service.mission.MissionService;
 import com.fubao.dearbao.domain.member.MemberRepository;
 import com.fubao.dearbao.domain.mission.MemberMissionRepository;
@@ -15,6 +16,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 public abstract class IntegrationTestSupport {
     @Autowired
     protected MissionService missionService;
+    @Autowired
+    protected MemberService memberService;
     @Autowired
     protected MemberRepository memberRepository;
     @Autowired
