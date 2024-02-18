@@ -1,0 +1,10 @@
+[[health-check]]
+=== Health Check
+
+==== HTTP Request
+include::{snippets}/health-check/http-request.adoc[]
+include::{snippets}/health-check/request-body.adoc[]
+
+==== HTTP Response
+include::{snippets}/health-check/http-response.adoc[]
+include::{snippets}/health-check/response-body.adoc[]
