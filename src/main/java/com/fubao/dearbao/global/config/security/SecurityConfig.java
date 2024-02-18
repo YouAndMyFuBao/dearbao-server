@@ -42,7 +42,7 @@ public class SecurityConfig {
     private final String[] POST_MEMBER_URLS = {
     };
     private final String[] GET_PERMITTED_URLS = {
-        "/api/v1/auth/kakao/code","/"
+        "/api/v1/auth/kakao/code","/","/docs/index.html"
     };
     private final String[] POST_PERMITTED_URLS = {
         "/api/v1/auth/kakao", "/api/v1/auth/token/refresh",

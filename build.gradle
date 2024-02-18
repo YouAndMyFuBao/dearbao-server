@@ -2,6 +2,7 @@ plugins {
   id 'java'
   id 'org.springframework.boot' version '3.1.6'
   id 'io.spring.dependency-management' version '1.1.4'
+  id 'org.asciidoctor.jvm.convert' version '3.3.2'
 }
 
 group = 'com.fubao'
@@ -9,6 +10,12 @@ version = '0.0.1-SNAPSHOT'
 
 java {
   sourceCompatibility = '17'
+}
+configurations {
+  compileOnly {
+    extendsFrom annotationProcessor
+  }
+  asciidoctorExt
 }
 
 repositories {
@@ -48,15 +55,47 @@ dependencies {
   //slack
   implementation 'com.squareup.okio:okio-jvm:3.7.0'
   implementation 'com.slack.api:slack-api-client:1.36.1'
+
+  //rest docs
+  asciidoctorExt 'org.springframework.restdocs:spring-restdocs-asciidoctor'
+  testImplementation 'org.springframework.restdocs:spring-restdocs-mockmvc'
 }
 
 jar {
   enabled = false
 }
 
+tasks.named('bootBuildImage') {
+  builder = 'paketobuilldpacks/builder-jammy-base:latest'
+}
+
 tasks.named('test') {
   useJUnitPlatform()
+  outputs.dir snippetsDir
 }
+
+ext {
+  snippetsDir = file('build/generated-snippets')
+}
+
+asciidoctor {
+  inputs.dir snippetsDir
+  configurations 'asciidoctorExt'
+
+  sources {
+    include("**/index.adoc")
+  }
+  baseDirFollowsSourceDir()
+  dependsOn test
+}
+
+bootJar{
+  dependsOn asciidoctor
+  from("${asciidoctor.outputDir}"){
+    into "static/docs"
+  }
+}
+
 task copyPrivate(type: Copy) {
   copy {
     from './dearbao-server-private'
