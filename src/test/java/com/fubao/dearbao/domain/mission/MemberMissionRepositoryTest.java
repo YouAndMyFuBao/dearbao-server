@@ -17,6 +17,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.tuple;
 
 class MemberMissionRepositoryTest extends IntegrationTestSupport {
 
@@ -58,6 +59,32 @@ class MemberMissionRepositoryTest extends IntegrationTestSupport {
         assertThat(savedMemberMissions).hasSize(2)
             .extracting("id")
             .contains(memberMissions.get(0).getId(), memberMissions.get(1).getId());
+    }
+
+    @DisplayName("멤버 id로 멤버가 수행한 미션 내용을 찾는다.")
+    @Test
+    void findAllByMemberId() {
+        //given
+        LocalDate date = LocalDate.of(2023, 11, 11);
+        Member member = memberRepository.save(createMember("1", "동석", MemberGender.MALE));
+        Member member2 = memberRepository.save(createMember("2", "동석2", MemberGender.MALE));
+        Mission mission = missionRepository.save(createMission(date, MissionState.ACTIVE));
+        Mission mission2 = missionRepository.save(createMission(date, MissionState.ACTIVE));
+        List<MemberMission> savedMemberMissions = memberMissionRepository.saveAll(List.of(
+            createMemberMission(member, mission),
+            createMemberMission(member, mission2))
+        );
+        memberMissionRepository.save(createMemberMission(member2,mission));
+
+        //when
+        List<MemberMission> memberMissions = memberMissionRepository.findAllByMemberId(member.getId());
+
+        //then
+        assertThat(memberMissions).hasSize(2)
+            .extracting("id")
+            .contains(
+                savedMemberMissions.get(0).getId(),savedMemberMissions.get(1).getId()
+            );
     }
 
     private Member createMember(String providerId, String nickname, MemberGender title) {

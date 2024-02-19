@@ -3,6 +3,7 @@ package com.fubao.dearbao.api.service.mission;
 import com.fubao.dearbao.api.controller.mission.dto.response.DailyMessageResponse;
 import com.fubao.dearbao.api.controller.mission.dto.response.DailyMissionBaseResponse;
 import com.fubao.dearbao.api.controller.mission.dto.response.DailyMissionResponse;
+import com.fubao.dearbao.api.controller.mission.dto.response.GetMyMissionResponse;
 import com.fubao.dearbao.domain.member.Member;
 import com.fubao.dearbao.domain.member.MemberRepository;
 import com.fubao.dearbao.domain.member.MemberState;
@@ -26,6 +27,7 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.Random;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -74,6 +76,21 @@ public class MissionServiceImpl implements MissionService {
         List<Mission> missionList = findInActiveMission();
         missionSetting(todayMission, missionList);
         deleteMemberMissionByTodayMission(todayMission);
+    }
+
+    @Override
+    public List<GetMyMissionResponse> getMyMission(Long memberId) {
+        List<MemberMission> memberMissions = findMemberMissionBy(memberId);
+        return memberMissions.stream().map(
+            memberMission -> GetMyMissionResponse.builder()
+                .date(dateUtil.toResponseDateFormat(memberMission.getMission().getOpenAt()))
+                .content(memberMission.getContent())
+                .build()
+        ).collect(Collectors.toList());
+    }
+
+    private List<MemberMission> findMemberMissionBy(Long memberId) {
+        return memberMissionRepository.findAllByMemberId(memberId);
     }
 
     private void deleteMemberMissionByTodayMission(Mission todayMission) {

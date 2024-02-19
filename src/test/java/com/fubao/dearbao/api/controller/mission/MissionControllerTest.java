@@ -15,12 +15,30 @@ class MissionControllerTest extends ControllerTestSupport {
 
     @DisplayName("데일리 미션 API")
     @Test
-    @WithMockUser(value = "1",roles = "USER")
+    @WithMockUser(value = "1", roles = "USER")
     void dailyMission() throws Exception {
         //given
         //when then
         mockMvc.perform(
                 get("/api/v1/mission")
+            )
+            .andDo(print())
+            .andExpect(status().isOk())
+            .andExpectAll(
+                jsonPath("$.isSuccess").value("true"),
+                jsonPath("$.code").value("success"),
+                jsonPath("$.message").value("요청에 성공하였습니다.")
+            );
+    }
+
+    @DisplayName("나의 미션을 조회한다.")
+    @Test
+    @WithMockUser(value = "1", roles = "USER")
+    void getMyMission() throws Exception {
+        //given
+        //when
+        mockMvc.perform(
+                get("/api/v1/mission/my-mission")
             )
             .andDo(print())
             .andExpect(status().isOk())
