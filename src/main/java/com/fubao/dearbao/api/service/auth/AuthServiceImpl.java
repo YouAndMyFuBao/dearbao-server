@@ -10,6 +10,8 @@ import com.fubao.dearbao.api.service.auth.dto.RegenerateTokenServiceDto;
 import com.fubao.dearbao.domain.member.Member;
 import com.fubao.dearbao.domain.member.MemberRepository;
 import com.fubao.dearbao.domain.member.MemberState;
+import com.fubao.dearbao.domain.member.SocialLogin;
+import com.fubao.dearbao.domain.member.SocialLoginRepository;
 import com.fubao.dearbao.domain.oauth.KakaoApiClient;
 import com.fubao.dearbao.global.common.exception.CustomException;
 import com.fubao.dearbao.global.common.exception.ResponseCode;
@@ -20,6 +22,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -28,6 +31,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class AuthServiceImpl implements AuthService {
 
     private final MemberRepository memberRepository;
+    private final SocialLoginRepository socialLoginRepository;
     private final KakaoApiClient kakaoApiClient;
     private final JwtTokenProvider jwtTokenProvider;
     private final RedisUtil redisUtil;
@@ -39,6 +43,7 @@ public class AuthServiceImpl implements AuthService {
         KakaoInfoDto kakaoInfoDto = kakaoApiClient.requestOAuthInfo(code);
         Member member = findOrCreateMember(kakaoInfoDto);
         AuthToken authToken = jwtTokenProvider.createToken(member.getId().toString());
+        System.out.println(member.getRole());
         return authToken.toKakaoLoginResponse(member.isInit());
     }
 
@@ -83,11 +88,18 @@ public class AuthServiceImpl implements AuthService {
     }
 
     private Member findOrCreateMember(KakaoInfoDto kakaoInfoDto) {
-        return memberRepository.findByProviderIdAndState(kakaoInfoDto.getId(), MemberState.ACTIVE)
-            .orElseGet(() -> signUp(kakaoInfoDto));
+        Optional<SocialLogin> socialLogin = socialLoginRepository.findByProviderId(
+            kakaoInfoDto.getId());
+
+        if (socialLogin.isPresent()) {
+            return socialLogin.get().getMember();
+        }
+        return signUp(kakaoInfoDto);
     }
 
     private Member signUp(KakaoInfoDto kakaoInfoDto) {
-        return memberRepository.save(Member.create(kakaoInfoDto.getId()));
+        Member member = memberRepository.save(Member.create());
+        socialLoginRepository.save(SocialLogin.create(member, kakaoInfoDto.getId()));
+        return member;
     }
 }

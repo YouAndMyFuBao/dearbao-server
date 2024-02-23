@@ -20,7 +20,7 @@ public class UserDetailsImpl extends Member implements UserDetails {
 
     @Override
     public String getPassword() {
-        return super.getProviderId();
+        return super.getRole().getName();
     }
 
     @Override

@@ -36,7 +36,7 @@ class MissionServiceTest extends IntegrationTestSupport {
         LocalDate todayDate = LocalDate.of(2023, 11, 11);
         LocalTime todayTime = LocalTime.of(9, 0, 0);
         LocalDateTime today = LocalDateTime.of(todayDate, todayTime);
-        Member member = memberRepository.save(createMember("001", "peter", MemberGender.MALE));
+        Member member = memberRepository.save(createMember("peter", MemberGender.MALE));
         missionRepository.save(createMission(todayDate, MissionState.ACTIVE));
 
         //when
@@ -56,7 +56,7 @@ class MissionServiceTest extends IntegrationTestSupport {
         LocalDate todayDate = LocalDate.of(2023, 11, 11);
         LocalTime todayTime = LocalTime.of(9, 0, 0);
         LocalDateTime today = LocalDateTime.of(todayDate, todayTime);
-        Member member = memberRepository.save(createMember("001", "peter", MemberGender.MALE));
+        Member member = memberRepository.save(createMember("peter", MemberGender.MALE));
         Mission mission = missionRepository.save(createMission(todayDate, MissionState.ACTIVE));
         memberMissionRepository.save(createMemberMission("content",member, mission));
 
@@ -77,7 +77,7 @@ class MissionServiceTest extends IntegrationTestSupport {
         LocalDate todayDate = LocalDate.of(2023, 11, 11);
         LocalTime todayTime = LocalTime.of(21, 0, 0);
         LocalDateTime today = LocalDateTime.of(todayDate, todayTime);
-        Member member = memberRepository.save(createMember("001", "peter", MemberGender.MALE));
+        Member member = memberRepository.save(createMember("peter", MemberGender.MALE));
         Mission mission = missionRepository.save(createMission(todayDate, MissionState.ACTIVE));
 
         //when
@@ -97,7 +97,7 @@ class MissionServiceTest extends IntegrationTestSupport {
         LocalDate todayDate = LocalDate.of(2023, 11, 11);
         LocalTime todayTime = LocalTime.of(21, 0, 0);
         LocalDateTime today = LocalDateTime.of(todayDate, todayTime);
-        Member member = memberRepository.save(createMember("001", "peter", MemberGender.MALE));
+        Member member = memberRepository.save(createMember("peter", MemberGender.MALE));
         Mission mission = missionRepository.save(createMission(todayDate, MissionState.ACTIVE));
         memberMissionRepository.save(createMemberMission("content",member, mission));
 
@@ -117,7 +117,7 @@ class MissionServiceTest extends IntegrationTestSupport {
         //given
         Mission nowMission = createMission(LocalDate.of(2023, 11, 11), MissionState.ACTIVE);
         Mission nextMission = createMission(LocalDate.of(2023, 11, 11), MissionState.INACTIVE);
-        Member member = memberRepository.save(createMember("001", "peter", MemberGender.MALE));
+        Member member = memberRepository.save(createMember("peter", MemberGender.MALE));
         List<Mission> missions = missionRepository.saveAll(List.of(nowMission, nextMission));
         memberMissionRepository.save(createMemberMission("content",member, missions.get(0)));
 
@@ -143,7 +143,7 @@ class MissionServiceTest extends IntegrationTestSupport {
         //given
         Mission nowMission = createMission(LocalDate.of(2023, 11, 11), MissionState.END);
         Mission nextMission = createMission(LocalDate.of(2023, 11, 11), MissionState.ACTIVE);
-        Member member = memberRepository.save(createMember("001", "peter", MemberGender.MALE));
+        Member member = memberRepository.save(createMember( "peter", MemberGender.MALE));
         List<Mission> missions = missionRepository.saveAll(List.of(nowMission, nextMission));
         memberMissionRepository.save(createMemberMission("content",member, missions.get(0)));
 
@@ -162,8 +162,8 @@ class MissionServiceTest extends IntegrationTestSupport {
         //given
         LocalDate date = LocalDate.of(2023, 11, 11);
         LocalDate date2 = LocalDate.of(2023, 12, 12);
-        Member member = memberRepository.save(createMember("1", "동석", MemberGender.MALE));
-        Member member2 = memberRepository.save(createMember("2", "동석2", MemberGender.MALE));
+        Member member = memberRepository.save(createMember("동석", MemberGender.MALE));
+        Member member2 = memberRepository.save(createMember("동석2", MemberGender.MALE));
         Mission mission = missionRepository.save(createMission(date, MissionState.ACTIVE));
         Mission mission2 = missionRepository.save(createMission(date2, MissionState.ACTIVE));
         List<MemberMission> savedMemberMissions = memberMissionRepository.saveAll(List.of(
@@ -202,13 +202,12 @@ class MissionServiceTest extends IntegrationTestSupport {
             .state(missionState).build();
     }
 
-    private Member createMember(String providerId, String nickname, MemberGender title) {
+    private Member createMember(String nickname, MemberGender title) {
         return Member.builder()
             .name(nickname)
             .gender(title)
             .state(MemberState.ACTIVE)
             .role(MemberRole.ROLE_MEMBER)
-            .providerId(providerId)
             .build();
     }
 }

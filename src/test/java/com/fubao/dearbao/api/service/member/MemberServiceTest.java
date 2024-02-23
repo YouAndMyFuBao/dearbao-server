@@ -18,7 +18,7 @@ class MemberServiceTest extends IntegrationTestSupport {
     @Test
     void getMemberNickname() {
         //given
-        Member member = memberRepository.save(createMember("001", "peter", MemberGender.MALE));
+        Member member = memberRepository.save(createMember( "peter", MemberGender.MALE));
 
         //when
         GetMemberNicknameResponse response = memberService.getMemberNickname(member.getId());
@@ -28,13 +28,12 @@ class MemberServiceTest extends IntegrationTestSupport {
             .extracting("nickname").isEqualTo(member.getName());
     }
 
-    private Member createMember(String providerId, String nickname, MemberGender title) {
+    private Member createMember(String nickname, MemberGender title) {
         return Member.builder()
             .name(nickname)
             .gender(title)
             .state(MemberState.ACTIVE)
             .role(MemberRole.ROLE_MEMBER)
-            .providerId(providerId)
             .build();
     }
 }

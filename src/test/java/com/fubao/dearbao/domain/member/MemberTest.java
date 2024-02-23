@@ -14,10 +14,8 @@ class MemberTest extends IntegrationTestSupport {
     @DisplayName("멤버 생성시 멤버 권한은 Guest이다.")
     @Test
     void memberRoleWhenCreate() {
-        //given
-        String providerId = "123456789";
         //when
-        Member member = Member.create(providerId);
+        Member member = Member.create();
         //then
         assertThat(member.getRole()).isEqualByComparingTo(MemberRole.ROLE_GUEST);
     }
@@ -25,10 +23,8 @@ class MemberTest extends IntegrationTestSupport {
     @DisplayName("멤버 생성시 멤버 상태는 ACTIVE이다.")
     @Test
     void memberStateWhenCreate() {
-        //given
-        String providerId = "123456789";
         //when
-        Member member = Member.create(providerId);
+        Member member = Member.create();
         //then
         assertThat(member.getState()).isEqualByComparingTo(MemberState.ACTIVE);
     }
@@ -39,7 +35,7 @@ class MemberTest extends IntegrationTestSupport {
         //given
         String nickname = "peter";
         MemberGender gender = MemberGender.MALE;
-        Member member = createMember("001", MemberRole.ROLE_GUEST);
+        Member member = createMember(MemberRole.ROLE_GUEST);
         //when
         member.initMember(nickname, gender);
         //then
@@ -52,7 +48,7 @@ class MemberTest extends IntegrationTestSupport {
     @Test
     void isPossibleNicknameSizeLessThan2() {
         //given
-        Member member = createMember("001", MemberRole.ROLE_GUEST);
+        Member member = createMember(MemberRole.ROLE_GUEST);
         String nickname = "1";
         //when
         boolean result = member.isPossibleNickname(nickname);
@@ -64,7 +60,7 @@ class MemberTest extends IntegrationTestSupport {
     @Test
     void isPossibleNicknameSizeMoreThan8() {
         //given
-        Member member = createMember("001", MemberRole.ROLE_GUEST);
+        Member member = createMember(MemberRole.ROLE_GUEST);
         String nickname = "123456789";
         //when
         boolean result = member.isPossibleNickname(nickname);
@@ -76,7 +72,7 @@ class MemberTest extends IntegrationTestSupport {
     @Test
     void isInitWithGuest() {
         //given
-        Member member = createMember("001", MemberRole.ROLE_GUEST);
+        Member member = createMember(MemberRole.ROLE_GUEST);
         //when
         boolean result = member.isInit();
         //then
@@ -87,16 +83,15 @@ class MemberTest extends IntegrationTestSupport {
     @Test
     void isInitWithMember() {
         //given
-        Member member = createMember("001", MemberRole.ROLE_MEMBER);
+        Member member = createMember(MemberRole.ROLE_MEMBER);
         //when
         boolean result = member.isInit();
         //then
         assertThat(result).isTrue();
     }
 
-    private Member createMember(String providerId, MemberRole memberRole) {
+    private Member createMember(MemberRole memberRole) {
         return Member.builder()
-            .providerId(providerId)
             .state(MemberState.ACTIVE)
             .role(memberRole)
             .build();

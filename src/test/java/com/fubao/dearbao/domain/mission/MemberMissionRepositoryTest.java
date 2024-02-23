@@ -26,7 +26,7 @@ class MemberMissionRepositoryTest extends IntegrationTestSupport {
     void findByMemberIdAndState() {
         //given
         LocalDate date = LocalDate.of(2023, 11, 11);
-        Member member = memberRepository.save(createMember("1", "동석", MemberGender.MALE));
+        Member member = memberRepository.save(createMember("동석", MemberGender.MALE));
         Mission mission = missionRepository.save(createMission(date, MissionState.ACTIVE));
         memberMissionRepository.save(createMemberMission(member, mission));
         //when
@@ -44,8 +44,8 @@ class MemberMissionRepositoryTest extends IntegrationTestSupport {
     void findAllByMissionId() {
         //given
         LocalDate date = LocalDate.of(2023, 11, 11);
-        Member member1 = createMember("1", "동석", MemberGender.MALE);
-        Member member2 = createMember("1", "동석2", MemberGender.MALE);
+        Member member1 = createMember("동석", MemberGender.MALE);
+        Member member2 = createMember("동석2", MemberGender.MALE);
         Mission mission = missionRepository.save(createMission(date, MissionState.ACTIVE));
         List<Member> members = memberRepository.saveAll(List.of(member1, member2));
         List<MemberMission> memberMissions = memberMissionRepository.saveAll(List.of(
@@ -66,34 +66,34 @@ class MemberMissionRepositoryTest extends IntegrationTestSupport {
     void findAllByMemberId() {
         //given
         LocalDate date = LocalDate.of(2023, 11, 11);
-        Member member = memberRepository.save(createMember("1", "동석", MemberGender.MALE));
-        Member member2 = memberRepository.save(createMember("2", "동석2", MemberGender.MALE));
+        Member member = memberRepository.save(createMember("동석", MemberGender.MALE));
+        Member member2 = memberRepository.save(createMember("동석2", MemberGender.MALE));
         Mission mission = missionRepository.save(createMission(date, MissionState.ACTIVE));
         Mission mission2 = missionRepository.save(createMission(date, MissionState.ACTIVE));
         List<MemberMission> savedMemberMissions = memberMissionRepository.saveAll(List.of(
             createMemberMission(member, mission),
             createMemberMission(member, mission2))
         );
-        memberMissionRepository.save(createMemberMission(member2,mission));
+        memberMissionRepository.save(createMemberMission(member2, mission));
 
         //when
-        List<MemberMission> memberMissions = memberMissionRepository.findAllByMemberId(member.getId());
+        List<MemberMission> memberMissions = memberMissionRepository.findAllByMemberId(
+            member.getId());
 
         //then
         assertThat(memberMissions).hasSize(2)
             .extracting("id")
             .contains(
-                savedMemberMissions.get(0).getId(),savedMemberMissions.get(1).getId()
+                savedMemberMissions.get(0).getId(), savedMemberMissions.get(1).getId()
             );
     }
 
-    private Member createMember(String providerId, String nickname, MemberGender title) {
+    private Member createMember(String nickname, MemberGender title) {
         return Member.builder()
             .name(nickname)
             .gender(title)
             .state(MemberState.ACTIVE)
             .role(MemberRole.ROLE_MEMBER)
-            .providerId(providerId)
             .build();
     }
 

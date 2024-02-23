@@ -11,13 +11,6 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.ToString;
-import org.springframework.security.core.GrantedAuthority;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
-import org.springframework.security.core.userdetails.UserDetails;
-import java.time.LocalDateTime;
-import java.util.Collection;
-import java.util.List;
 
 @Entity(name = "member")
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -27,25 +20,18 @@ public class Member extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
     private String name;
-
-    private String providerId;
-
     @Enumerated(EnumType.STRING)
     private MemberRole role;
-
     @Enumerated(EnumType.STRING)
     private MemberGender gender;
-
     @Enumerated(EnumType.STRING)
     private MemberState state;
 
     @Builder
-    public Member(String name, String providerId, MemberRole role, MemberGender gender,
+    public Member(String name, MemberRole role, MemberGender gender,
         MemberState state) {
         this.name = name;
-        this.providerId = providerId;
         this.role = role;
         this.gender = gender;
         this.state = state;
@@ -54,20 +40,16 @@ public class Member extends BaseEntity {
     public Member(Member member) {
         this.state = member.getState();
         this.role = member.getRole();
-        this.providerId = member.getProviderId();
         this.gender = member.getGender();
         this.id = member.getId();
         this.name = member.getName();
     }
 
-    private Member(String providerId) {
-        this.providerId = providerId;
-        this.role = MemberRole.ROLE_GUEST;
-        this.state = MemberState.ACTIVE;
-    }
-
-    public static Member create(String providerId) {
-        return new Member(providerId);
+    public static Member create() {
+        return Member.builder()
+            .role(MemberRole.ROLE_GUEST)
+            .state(MemberState.ACTIVE)
+            .build();
     }
 
     public void initMember(String nickName, MemberGender gender) {
