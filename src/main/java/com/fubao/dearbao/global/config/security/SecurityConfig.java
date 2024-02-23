@@ -31,7 +31,8 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 @EnableWebSecurity
 public class SecurityConfig {
 
-    private final String[] GET_AUTHENTICATED_URLS = {
+    private final String[] ADMIN_URLS = {
+
     };
     private final String[] GUEST_URLS = {
         "/api/v1/auth/init"
@@ -48,7 +49,7 @@ public class SecurityConfig {
         "/api/v1/auth/kakao/code", "/", "/docs/index.html"
     };
     private final String[] POST_PERMITTED_URLS = {
-        "/api/v1/auth/kakao", "/api/v1/auth/token/refresh",
+        "/api/v1/auth/kakao", "/api/v1/auth/token/refresh","/api/v1/admin/login"
     };
     @Value("${security.cors-urls}")
     private final List<String> CORS_URLS;
@@ -83,6 +84,8 @@ public class SecurityConfig {
                 .hasRole(MemberRole.ROLE_MEMBER.getName())
                 .requestMatchers(HttpMethod.DELETE, DELETE_MEMBER_URLS)
                 .hasRole(MemberRole.ROLE_MEMBER.getName())
+                .requestMatchers(ADMIN_URLS)
+                .hasRole(MemberRole.ROLE_ADMIN.getName())
                 .requestMatchers(HttpMethod.GET, GET_PERMITTED_URLS).permitAll()
                 .requestMatchers(HttpMethod.POST, POST_PERMITTED_URLS).permitAll()
                 .anyRequest().authenticated()

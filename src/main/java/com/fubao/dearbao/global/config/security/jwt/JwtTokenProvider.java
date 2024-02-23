@@ -135,4 +135,8 @@ public class JwtTokenProvider {
     public String getUsernameFromRefreshToken(String refreshToken) {
         return jwtParser.parseClaimsJws(refreshToken).getBody().getSubject();
     }
+
+    public String createAdminToken(String username) {
+        return createAccessToken(username);
+    }
 }
