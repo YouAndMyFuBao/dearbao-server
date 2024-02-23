@@ -5,4 +5,6 @@ import com.fubao.dearbao.api.controller.member.dto.response.GetMemberNicknameRes
 public interface MemberService {
 
     GetMemberNicknameResponse getMemberNickname(Long memberId);
+
+    void deactivate(Long memberId);
 }

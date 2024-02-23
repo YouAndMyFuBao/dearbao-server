@@ -83,4 +83,8 @@ public class Member extends BaseEntity {
     public boolean isInit() {
         return role.equals(MemberRole.ROLE_MEMBER);
     }
+
+    public void deactivate() {
+        this.state = MemberState.INACTIVE;
+    }
 }

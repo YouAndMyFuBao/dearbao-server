@@ -41,8 +41,11 @@ public class SecurityConfig {
     };
     private final String[] POST_MEMBER_URLS = {
     };
+    private final String[] DELETE_MEMBER_URLS = {
+        "/api/v1/member"
+    };
     private final String[] GET_PERMITTED_URLS = {
-        "/api/v1/auth/kakao/code","/","/docs/index.html"
+        "/api/v1/auth/kakao/code", "/", "/docs/index.html"
     };
     private final String[] POST_PERMITTED_URLS = {
         "/api/v1/auth/kakao", "/api/v1/auth/token/refresh",
@@ -72,9 +75,14 @@ public class SecurityConfig {
                 //인증 중 예외 발생 시 jwtAuthenticationEntryPoint 호출
             )
             .authorizeHttpRequests(request -> request
-                .requestMatchers(HttpMethod.GET, GUEST_URLS).hasRole(MemberRole.ROLE_GUEST.getName())
-                .requestMatchers(HttpMethod.GET, GET_MEMBER_URLS).hasRole(MemberRole.ROLE_MEMBER.getName())
-                .requestMatchers(HttpMethod.POST, POST_MEMBER_URLS).hasRole(MemberRole.ROLE_MEMBER.getName())
+                .requestMatchers(HttpMethod.GET, GUEST_URLS)
+                .hasRole(MemberRole.ROLE_GUEST.getName())
+                .requestMatchers(HttpMethod.GET, GET_MEMBER_URLS)
+                .hasRole(MemberRole.ROLE_MEMBER.getName())
+                .requestMatchers(HttpMethod.POST, POST_MEMBER_URLS)
+                .hasRole(MemberRole.ROLE_MEMBER.getName())
+                .requestMatchers(HttpMethod.DELETE, DELETE_MEMBER_URLS)
+                .hasRole(MemberRole.ROLE_MEMBER.getName())
                 .requestMatchers(HttpMethod.GET, GET_PERMITTED_URLS).permitAll()
                 .requestMatchers(HttpMethod.POST, POST_PERMITTED_URLS).permitAll()
                 .anyRequest().authenticated()

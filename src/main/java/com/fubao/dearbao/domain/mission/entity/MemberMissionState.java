@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public enum MemberMissionState {
     ACTIVE("활동"),
+    INACTIVE("비활동"),
     END("끝");
     private final String name;
 }
