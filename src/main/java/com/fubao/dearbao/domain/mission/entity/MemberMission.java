@@ -46,4 +46,8 @@ public class MemberMission extends BaseEntity {
     public void setEnd() {
         this.state = MemberMissionState.END;
     }
+
+    public void deactivate() {
+        this.state = MemberMissionState.INACTIVE;
+    }
 }
