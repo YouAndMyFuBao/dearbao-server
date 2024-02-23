@@ -5,6 +5,7 @@ import com.fubao.dearbao.api.controller.mission.dto.response.DailyMissionBaseRes
 import com.fubao.dearbao.api.controller.mission.dto.response.DailyMissionResponse;
 import com.fubao.dearbao.api.controller.mission.dto.response.GetMyMissionResponse;
 import com.fubao.dearbao.api.controller.mission.dto.response.GetTodayMissionResponse;
+import com.fubao.dearbao.api.service.mission.dto.PostTodayMissionDto;
 import com.fubao.dearbao.domain.member.Member;
 import com.fubao.dearbao.domain.member.MemberRepository;
 import com.fubao.dearbao.domain.member.MemberState;
@@ -94,6 +95,36 @@ public class MissionServiceImpl implements MissionService {
     public GetTodayMissionResponse getTodayMission() {
         Mission mission = findActiveMission();
         return GetTodayMissionResponse.of(mission);
+    }
+
+    @Override
+    @Transactional
+    public void postTodayMission(PostTodayMissionDto service) {
+        Member member = findMemberById(service.getMemberId());
+        checkAlreadyMission(member.getId());
+        Mission mission = findActiveMission();
+        memberMissionRepository.save(
+            createMemberMission(member, mission, service.getContent())
+        );
+    }
+
+    private void checkAlreadyMission(Long memberId) {
+        if(findMemberMissionWithActive(memberId)){
+            throw new CustomException(ResponseCode.ALREADY_ACTIVE_DAILY_MISSION);
+        }
+    }
+
+    private boolean findMemberMissionWithActive(Long memberId) {
+        return memberMissionRepository.findByMemberIdAndState(memberId,MemberMissionState.ACTIVE).isPresent();
+    }
+
+    private MemberMission createMemberMission(Member member, Mission mission, String content) {
+        return MemberMission.builder()
+            .mission(mission)
+            .member(member)
+            .state(MemberMissionState.ACTIVE)
+            .content(content)
+            .build();
     }
 
     private List<MemberMission> findMemberMissionBy(Long memberId) {
