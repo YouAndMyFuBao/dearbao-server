@@ -37,7 +37,7 @@ public class SecurityConfig {
         "/api/v1/auth/init"
     };
     private final String[] GET_MEMBER_URLS = {
-        "/api/v1/mission"
+        "/api/v1/mission/**"
     };
     private final String[] POST_MEMBER_URLS = {
     };

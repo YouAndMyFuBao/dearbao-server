@@ -4,6 +4,7 @@ import com.fubao.dearbao.api.controller.mission.dto.response.DailyMessageRespons
 import com.fubao.dearbao.api.controller.mission.dto.response.DailyMissionBaseResponse;
 import com.fubao.dearbao.api.controller.mission.dto.response.DailyMissionResponse;
 import com.fubao.dearbao.api.controller.mission.dto.response.GetMyMissionResponse;
+import com.fubao.dearbao.api.controller.mission.dto.response.GetTodayMissionResponse;
 import com.fubao.dearbao.domain.member.Member;
 import com.fubao.dearbao.domain.member.MemberRepository;
 import com.fubao.dearbao.domain.member.MemberState;
@@ -87,6 +88,12 @@ public class MissionServiceImpl implements MissionService {
                 .content(memberMission.getContent())
                 .build()
         ).collect(Collectors.toList());
+    }
+
+    @Override
+    public GetTodayMissionResponse getTodayMission() {
+        Mission mission = findActiveMission();
+        return GetTodayMissionResponse.of(mission);
     }
 
     private List<MemberMission> findMemberMissionBy(Long memberId) {
