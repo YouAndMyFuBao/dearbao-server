@@ -12,44 +12,11 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 class MemberRepositoryTest extends IntegrationTestSupport {
 
-    @DisplayName("소셜 로그인의 provider의 id를 가진 member를 조회한다.")
-    @Test
-    void findByProviderIdAndState() {
-        //given
-        String providerId = "123456789";
-        Member member = createMember(providerId, "peter");
-        memberRepository.save(member);
-
-        //when
-        Optional<Member> savedMember = memberRepository.findByProviderIdAndState(providerId,
-            MemberState.ACTIVE);
-
-        //then
-        assertThat(savedMember).isNotEmpty()
-            .get().extracting("providerId").isEqualTo(providerId);
-    }
-
-    @DisplayName("소셜 로그인 provider의 id를 가진 member를 조회할 때, 없는 경우 null을 반환한다.")
-    @Test
-    void findByProviderIdAndStateWhenMemberIsEmpty() {
-        //given
-        String providerId = "123456789";
-
-        //when
-        Optional<Member> savedMember = memberRepository.findByProviderIdAndState(
-            providerId, MemberState.ACTIVE
-        );
-
-        //then
-        assertThat(savedMember).isEmpty();
-
-    }
-
     @DisplayName("id와 state를 가지고 유저를 조회한다.")
     @Test
     void findByIdAndState() {
         //given
-        Member member = createMember("001", "peter");
+        Member member = createMember("peter");
         Member savedMember = memberRepository.save(member);
 
         Long id = savedMember.getId();
@@ -97,7 +64,7 @@ class MemberRepositoryTest extends IntegrationTestSupport {
         //given
         String nickname = "nickname";
         MemberState state = MemberState.ACTIVE;
-        Member member = createMember("001", nickname);
+        Member member = createMember( nickname);
         memberRepository.save(member);
 
         //when
@@ -106,11 +73,15 @@ class MemberRepositoryTest extends IntegrationTestSupport {
         //then
         assertThat(result).isTrue();
     }
-
-    private Member createMember(String providerId, String nickname) {
+    private SocialLogin createSocialLogin(String providerId, Member member) {
+        return SocialLogin.builder()
+            .member(member)
+            .providerId(providerId)
+            .build();
+    }
+    private Member createMember( String nickname) {
         return Member.builder()
             .name(nickname)
-            .providerId(providerId)
             .state(MemberState.ACTIVE)
             .role(MemberRole.ROLE_GUEST)
             .build();

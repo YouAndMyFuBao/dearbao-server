@@ -28,7 +28,7 @@ class UserDetailsServiceImplTest extends IntegrationTestSupport {
     @Test
     void loadUserByUsernameExistUser() {
         //given
-        Member member = createMember("001");
+        Member member = createMember();
         memberRepository.save(member);
         //when
         UserDetails userDetails = userDetailsService.loadUserByUsername(
@@ -53,9 +53,8 @@ class UserDetailsServiceImplTest extends IntegrationTestSupport {
         assertThat(e.getMessage()).isEqualTo(String.valueOf(memberId));
     }
 
-    private Member createMember(String providerId) {
+    private Member createMember() {
         return Member.builder()
-            .providerId(providerId)
             .state(MemberState.ACTIVE)
             .role(MemberRole.ROLE_GUEST)
             .build();

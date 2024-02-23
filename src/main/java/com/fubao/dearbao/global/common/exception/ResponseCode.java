@@ -33,7 +33,9 @@ public enum ResponseCode {
     EXPIRED_TOKEN("AUTH-ERR-003", HttpStatus.UNAUTHORIZED, "만료된 토근입니다."),
     UNSUPPORTED_TOKEN("AUTH-ERR-004", HttpStatus.UNAUTHORIZED, "지원하지 않는 토큰입니다."),
     //test
-    TEST("TEST-ERR-001", HttpStatus.BAD_REQUEST, "테스트입니다");
+    TEST("TEST-ERR-001", HttpStatus.BAD_REQUEST, "테스트입니다"),
+    //admin
+    INVALID_LOGIN("ADMIN-001",HttpStatus.BAD_REQUEST , "유효하지 않은 아이디 비밀번호입니다.");
     private final String code;
     private final HttpStatus status;
     private final String message;

@@ -22,7 +22,7 @@ class MemberMissionTest extends IntegrationTestSupport {
     void setEnd() {
         //given
         LocalDate todayDate = LocalDate.of(2023, 11, 11);
-        Member member = memberRepository.save(createMember("001", "peter", MemberGender.MALE));
+        Member member = memberRepository.save(createMember( "peter", MemberGender.MALE));
         Mission mission = missionRepository.save(createMission(todayDate, MissionState.ACTIVE));
         MemberMission memberMission = memberMissionRepository.save(
             createMemberMission(member, mission));
@@ -50,13 +50,12 @@ class MemberMissionTest extends IntegrationTestSupport {
             .state(missionState).build();
     }
 
-    private Member createMember(String providerId, String nickname, MemberGender title) {
+    private Member createMember(String nickname, MemberGender title) {
         return Member.builder()
             .name(nickname)
             .gender(title)
             .state(MemberState.ACTIVE)
             .role(MemberRole.ROLE_MEMBER)
-            .providerId(providerId)
             .build();
     }
 }
