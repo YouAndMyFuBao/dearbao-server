@@ -2,6 +2,7 @@ package com.fubao.dearbao.api.controller.mission;
 
 import com.fubao.dearbao.api.controller.mission.dto.response.DailyMissionBaseResponse;
 import com.fubao.dearbao.api.controller.mission.dto.response.GetMyMissionResponse;
+import com.fubao.dearbao.api.controller.mission.dto.response.GetTodayMissionResponse;
 import com.fubao.dearbao.api.service.mission.MissionService;
 import com.fubao.dearbao.global.common.response.DataResponse;
 import lombok.RequiredArgsConstructor;
@@ -35,6 +36,12 @@ public class MissionController {
         Authentication loggedInUser = SecurityContextHolder.getContext().getAuthentication();
         Long memberId = Long.parseLong(loggedInUser.getName());
         List<GetMyMissionResponse> response = missionService.getMyMission(memberId);
+        return ResponseEntity.ok(DataResponse.of(response));
+    }
+
+    @GetMapping("daily")
+    public ResponseEntity<DataResponse<GetTodayMissionResponse>> getTodayMission() {
+        GetTodayMissionResponse response = missionService.getTodayMission();
         return ResponseEntity.ok(DataResponse.of(response));
     }
 }

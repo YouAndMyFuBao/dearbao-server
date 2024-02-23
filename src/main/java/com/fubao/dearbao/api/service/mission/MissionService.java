@@ -2,6 +2,7 @@ package com.fubao.dearbao.api.service.mission;
 
 import com.fubao.dearbao.api.controller.mission.dto.response.DailyMissionBaseResponse;
 import com.fubao.dearbao.api.controller.mission.dto.response.GetMyMissionResponse;
+import com.fubao.dearbao.api.controller.mission.dto.response.GetTodayMissionResponse;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -13,4 +14,6 @@ public interface MissionService {
     void setDailyMission();
 
     List<GetMyMissionResponse> getMyMission(Long memberId);
+
+    GetTodayMissionResponse getTodayMission();
 }
