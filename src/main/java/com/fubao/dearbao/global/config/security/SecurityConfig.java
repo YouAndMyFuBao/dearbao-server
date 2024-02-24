@@ -32,7 +32,7 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 public class SecurityConfig {
 
     private final String[] ADMIN_URLS = {
-
+        "/api/v1/admin/enquiry"
     };
     private final String[] GUEST_URLS = {
         "/api/v1/auth/init"
@@ -41,6 +41,7 @@ public class SecurityConfig {
         "/api/v1/mission/**"
     };
     private final String[] POST_MEMBER_URLS = {
+        "/api/v1/enquiry"
     };
     private final String[] DELETE_MEMBER_URLS = {
         "/api/v1/member"
