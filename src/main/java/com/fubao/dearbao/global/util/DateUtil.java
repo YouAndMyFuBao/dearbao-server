@@ -21,4 +21,9 @@ public class DateUtil {
         DateFormat dateFormat = new SimpleDateFormat("MM:dd");
         return dateFormat.format(date);
     }
+
+    public String toResponseDateTimeFormat(LocalDateTime localDateTime) {
+        DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy:MM:dd:HH:mm:ss");
+        return dateTimeFormatter.format(localDateTime);
+    }
 }
