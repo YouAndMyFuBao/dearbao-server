@@ -35,7 +35,9 @@ public enum ResponseCode {
     //test
     TEST("TEST-ERR-001", HttpStatus.BAD_REQUEST, "테스트입니다"),
     //admin
-    INVALID_LOGIN("ADMIN-001",HttpStatus.BAD_REQUEST , "유효하지 않은 아이디 비밀번호입니다.");
+    INVALID_LOGIN("ADMIN-001",HttpStatus.BAD_REQUEST , "유효하지 않은 아이디 비밀번호입니다."),
+    //enquiry
+    ENQUIRY_OVER_CONTENT_LENGTH("ENQUIRY-001", HttpStatus.BAD_REQUEST , "글자수는 최대 300글자 입니다.");
     private final String code;
     private final HttpStatus status;
     private final String message;
