@@ -6,6 +6,7 @@ import com.fubao.dearbao.api.controller.admin.dto.response.GetMissionResponse;
 import com.fubao.dearbao.api.controller.auth.dto.response.KakaoLoginResponse;
 import com.fubao.dearbao.api.controller.auth.dto.response.TokenRegenerateResponse;
 import com.fubao.dearbao.api.service.admin.dto.AdminLoginDto;
+import com.fubao.dearbao.api.service.admin.dto.PostMissionDto;
 import java.util.List;
 
 public interface AdminService {
@@ -15,4 +16,6 @@ public interface AdminService {
     List<GetEnquiryResponse> getEnquiryList();
 
     List<GetMissionResponse> getMissionList();
+
+    void postMission(PostMissionDto service);
 }

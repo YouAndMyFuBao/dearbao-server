@@ -4,10 +4,14 @@ import com.fubao.dearbao.api.controller.admin.dto.response.AdminLoginResponse;
 import com.fubao.dearbao.api.controller.admin.dto.response.GetEnquiryResponse;
 import com.fubao.dearbao.api.controller.admin.dto.response.GetMissionResponse;
 import com.fubao.dearbao.api.service.admin.dto.AdminLoginDto;
+import com.fubao.dearbao.api.service.admin.dto.PostMissionDto;
 import com.fubao.dearbao.domain.enquiry.Enquiry;
 import com.fubao.dearbao.domain.enquiry.EnquiryRepository;
 import com.fubao.dearbao.domain.member.IdLogin;
 import com.fubao.dearbao.domain.member.IdLoginRepository;
+import com.fubao.dearbao.domain.member.Member;
+import com.fubao.dearbao.domain.member.MemberRepository;
+import com.fubao.dearbao.domain.member.MemberState;
 import com.fubao.dearbao.domain.mission.MissionRepository;
 import com.fubao.dearbao.domain.mission.entity.Mission;
 import com.fubao.dearbao.global.common.exception.CustomException;
@@ -28,6 +32,7 @@ import java.util.List;
 public class AdminServiceImpl implements AdminService {
 
     private final PasswordEncoder passwordEncoder;
+    private final MemberRepository memberRepository;
     private final MissionRepository missionRepository;
     private final IdLoginRepository idLoginRepository;
     private final JwtTokenProvider jwtTokenProvider;
@@ -74,6 +79,13 @@ public class AdminServiceImpl implements AdminService {
         ).toList();
     }
 
+    @Override
+    @Transactional
+    public void postMission(PostMissionDto dto) {
+        Member member = findMemberById(dto.getMemberId());
+        missionRepository.save(Mission.create(dto.getContent(),dto.getAnswer(),member.getName()));
+    }
+
     private String isMissionOpenAt(Mission mission) {
         if (mission.getOpenAt() == null) {
             return null;
@@ -83,5 +95,12 @@ public class AdminServiceImpl implements AdminService {
 
     public boolean checkPassword(String password1, String password2) {
         return passwordEncoder.matches(password1, password2);
+    }
+
+    private Member findMemberById(Long memberId) {
+        return memberRepository.findByIdAndState(memberId, MemberState.ACTIVE)
+            .orElseThrow(
+                () -> new CustomException(ResponseCode.NOT_FOUND_MEMBER)
+            );
     }
 }
