@@ -6,8 +6,8 @@ import lombok.RequiredArgsConstructor;
 @Getter
 @RequiredArgsConstructor
 public enum MissionState {
-    ACTIVE("활동"),
-    INACTIVE("비활동"),
-    END("끝");
+    ACTIVE("오픈 중"),
+    INACTIVE("오픈 대기"),
+    END("오픈 완료");
     private final String name;
 }
