@@ -32,6 +32,7 @@ public class GlobalExceptionHandler {
             .status(e.getResponseCode().getStatus())
             .body(errorResponse);
     }
+
     // 지원하지 않는 HttpRequestMethod
     @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
     protected ResponseEntity<ErrorResponse> handleHttpRequestMethodNotSupportedException(
@@ -59,8 +60,8 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ErrorResponse> processValidationError(MethodArgumentNotValidException e,
         HttpServletRequest request) {
-        final ErrorResponse errorResponse = ErrorResponse.of(ResponseCode.BAD_REQUEST, e.getBindingResult().getAllErrors().get(0).getDefaultMessage());
-        slackWebhookUtil.slackNotificationThread(e, request);
+        final ErrorResponse errorResponse = ErrorResponse.of(ResponseCode.BAD_REQUEST,
+            e.getBindingResult().getAllErrors().get(0).getDefaultMessage());
         return ResponseEntity
             .status(e.getStatusCode())
             .body(errorResponse);
