@@ -1,5 +1,6 @@
 package com.fubao.dearbao.domain.mission.entity;
 
+import com.fubao.dearbao.domain.member.Member;
 import com.fubao.dearbao.global.common.entity.BaseEntity;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -35,6 +36,15 @@ public class Mission extends BaseEntity {
         this.answer = answer;
         this.state = state;
         this.openAt = openAt;
+    }
+
+    public static Mission create(String content, String answer, String name) {
+        return Mission.builder()
+            .state(MissionState.INACTIVE)
+            .content(content)
+            .answer(answer)
+            .constructor(name)
+            .build();
     }
 
     public void setActive(LocalDate date) {
