@@ -86,6 +86,22 @@ public class AdminServiceImpl implements AdminService {
         missionRepository.save(Mission.create(dto.getContent(),dto.getAnswer(),member.getName()));
     }
 
+    @Override
+    @Transactional
+    public void deleteMission(Long missionId) {
+        Mission mission = findMissionBy(missionId);
+        if(!mission.canDelete())
+            throw new CustomException(ResponseCode.NOT_DELETE_MISSION);
+        missionRepository.delete(mission);
+    }
+
+    private Mission findMissionBy(Long missionId) {
+        return missionRepository.findById(missionId)
+            .orElseThrow(
+            () -> new CustomException(ResponseCode.NOT_FOUND_MISSION)
+        );
+    }
+
     private String isMissionOpenAt(Mission mission) {
         if (mission.getOpenAt() == null) {
             return null;

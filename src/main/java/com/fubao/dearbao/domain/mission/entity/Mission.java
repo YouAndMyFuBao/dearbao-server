@@ -55,4 +55,8 @@ public class Mission extends BaseEntity {
     public void setEnd() {
         this.state = MissionState.END;
     }
+
+    public boolean canDelete() {
+        return this.state.equals(MissionState.INACTIVE);
+    }
 }

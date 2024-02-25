@@ -18,4 +18,6 @@ public interface AdminService {
     List<GetMissionResponse> getMissionList();
 
     void postMission(PostMissionDto service);
+
+    void deleteMission(Long missionId);
 }
