@@ -11,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -48,8 +49,10 @@ public class MissionController {
         GetTodayMissionResponse response = missionService.getTodayMission();
         return ResponseEntity.ok(DataResponse.of(response));
     }
+
     @PostMapping("daily")
-    public ResponseEntity<DataResponse<ResponseCode>> postTodayMission(@RequestBody PostTodayMissionRequest request) {
+    public ResponseEntity<DataResponse<ResponseCode>> postTodayMission(
+        @Validated @RequestBody PostTodayMissionRequest request) {
         Authentication loggedInUser = SecurityContextHolder.getContext().getAuthentication();
         Long memberId = Long.parseLong(loggedInUser.getName());
         missionService.postTodayMission(request.toService(memberId));

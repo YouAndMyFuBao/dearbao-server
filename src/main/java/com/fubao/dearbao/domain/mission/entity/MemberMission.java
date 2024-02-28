@@ -2,6 +2,8 @@ package com.fubao.dearbao.domain.mission.entity;
 
 import com.fubao.dearbao.domain.member.Member;
 import com.fubao.dearbao.global.common.entity.BaseEntity;
+import com.fubao.dearbao.global.common.exception.CustomException;
+import com.fubao.dearbao.global.common.exception.ResponseCode;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -43,11 +45,25 @@ public class MemberMission extends BaseEntity {
         this.state = state;
     }
 
+    public static MemberMission create(Member member, Mission mission, String content) {
+        return MemberMission.builder()
+            .member(member)
+            .mission(mission)
+            .content(content)
+            .state(MemberMissionState.ACTIVE)
+            .build();
+    }
+
     public void setEnd() {
         this.state = MemberMissionState.END;
     }
 
     public void deactivate() {
         this.state = MemberMissionState.INACTIVE;
+    }
+
+    public void validate() {
+        if(this.content.length()>400)
+            throw new CustomException(ResponseCode.INVALID_MISSION_CONTENT);
     }
 }
