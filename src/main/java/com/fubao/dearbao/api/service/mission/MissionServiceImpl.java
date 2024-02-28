@@ -103,28 +103,22 @@ public class MissionServiceImpl implements MissionService {
         Member member = findMemberById(service.getMemberId());
         checkAlreadyMission(member.getId());
         Mission mission = findActiveMission();
+        MemberMission memberMission = MemberMission.create(member, mission, service.getContent());
+        memberMission.validate();
         memberMissionRepository.save(
-            createMemberMission(member, mission, service.getContent())
+            memberMission
         );
     }
 
     private void checkAlreadyMission(Long memberId) {
-        if(findMemberMissionWithActive(memberId)){
+        if (findMemberMissionWithActive(memberId)) {
             throw new CustomException(ResponseCode.ALREADY_ACTIVE_DAILY_MISSION);
         }
     }
 
     private boolean findMemberMissionWithActive(Long memberId) {
-        return memberMissionRepository.findByMemberIdAndState(memberId,MemberMissionState.ACTIVE).isPresent();
-    }
-
-    private MemberMission createMemberMission(Member member, Mission mission, String content) {
-        return MemberMission.builder()
-            .mission(mission)
-            .member(member)
-            .state(MemberMissionState.ACTIVE)
-            .content(content)
-            .build();
+        return memberMissionRepository.findByMemberIdAndState(memberId, MemberMissionState.ACTIVE)
+            .isPresent();
     }
 
     private List<MemberMission> findMemberMissionBy(Long memberId) {

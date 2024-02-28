@@ -18,10 +18,12 @@ public enum ResponseCode {
     INVALID_NICKNAME("MEM-ERR-003", HttpStatus.BAD_REQUEST, "유효하지 않은 닉네임입니다."),
     EXIST_NICKNAME("MEM-ERR-004", HttpStatus.CONFLICT, "이미 사용중인 닉네임입니다."),
     //mission
-    NOT_FOUND_MISSION("MISSION-ERR-001", HttpStatus.NOT_FOUND,"미션을 찾을 수 없습니다."),
-    ALREADY_ACTIVE_DAILY_MISSION("MISSION-ERR-002", HttpStatus.CONFLICT,"이미 미션을 수행하였습니다."),
+    NOT_FOUND_MISSION("MISSION-ERR-001", HttpStatus.NOT_FOUND, "미션을 찾을 수 없습니다."),
+    ALREADY_ACTIVE_DAILY_MISSION("MISSION-ERR-002", HttpStatus.CONFLICT, "이미 미션을 수행하였습니다."),
+    INVALID_MISSION_CONTENT("MISSION-ERR-003", HttpStatus.BAD_REQUEST, "미션 내용은 400자를 넘길 수 없습니다."),
 
-    NOT_FOUND_VALID_MISSION_FOR_SET_DAILY_MISSION("MISSION-ERR-999",HttpStatus.NOT_FOUND ,"데일리 미션을 생성할 수 있는 미션이 없습니다."),
+    NOT_FOUND_VALID_MISSION_FOR_SET_DAILY_MISSION("MISSION-ERR-999", HttpStatus.NOT_FOUND,
+        "데일리 미션을 생성할 수 있는 미션이 없습니다."),
 
     //GLOBAL
     BAD_REQUEST("GLB-ERR-001", HttpStatus.BAD_REQUEST, "잘못된 요청입니다."),
@@ -35,10 +37,10 @@ public enum ResponseCode {
     //test
     TEST("TEST-ERR-001", HttpStatus.BAD_REQUEST, "테스트입니다"),
     //admin
-    INVALID_LOGIN("ADMIN-001",HttpStatus.BAD_REQUEST , "유효하지 않은 아이디 비밀번호입니다."),
-    NOT_DELETE_MISSION("ADMIN-002",HttpStatus.BAD_REQUEST ,"지울 수 없는 미션입니다." ),
+    INVALID_LOGIN("ADMIN-001", HttpStatus.BAD_REQUEST, "유효하지 않은 아이디 비밀번호입니다."),
+    NOT_DELETE_MISSION("ADMIN-002", HttpStatus.BAD_REQUEST, "지울 수 없는 미션입니다."),
     //enquiry
-    ENQUIRY_OVER_CONTENT_LENGTH("ENQUIRY-001", HttpStatus.BAD_REQUEST , "글자수는 최대 300글자 입니다.");
+    ENQUIRY_OVER_CONTENT_LENGTH("ENQUIRY-001", HttpStatus.BAD_REQUEST, "글자수는 최대 300글자 입니다.");
     private final String code;
     private final HttpStatus status;
     private final String message;
