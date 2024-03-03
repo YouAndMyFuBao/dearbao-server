@@ -20,7 +20,7 @@ public class HealthControllerDocsTest extends RestDocsSupport {
 
     @DisplayName("서버 구동 확인 API")
     @Test
-    void hello() throws Exception {
+    void healthCheck() throws Exception {
         mockMvc.perform(
                 get("")
             )

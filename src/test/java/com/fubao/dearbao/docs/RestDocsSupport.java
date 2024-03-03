@@ -19,7 +19,7 @@ import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.docu
 public abstract class RestDocsSupport {
     protected MockMvc mockMvc;
     protected ObjectMapper objectMapper = new ObjectMapper();
-
+    private RestDocumentationResultHandler document;
 
     @BeforeEach
     void setUp(RestDocumentationContextProvider provider) {
@@ -34,7 +34,13 @@ public abstract class RestDocsSupport {
     public RestDocumentationResultHandler write() {
         return MockMvcRestDocumentation.document(
             "{class-name}/{method-name}",
-            Preprocessors.preprocessRequest(Preprocessors.prettyPrint()),
+            Preprocessors.preprocessRequest(
+                Preprocessors.modifyUris()
+                    .scheme("https")
+                    .host("dev2.yamfubao.shop")
+                    .removePort(),
+                Preprocessors.prettyPrint()
+            ),
             Preprocessors.preprocessResponse(Preprocessors.prettyPrint())
         );
     }
