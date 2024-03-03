@@ -156,7 +156,7 @@ class MissionServiceTest extends IntegrationTestSupport {
             ResponseCode.NOT_FOUND_VALID_MISSION_FOR_SET_DAILY_MISSION);
     }
 
-    @DisplayName("")
+    @DisplayName("나의 미션을 조회한다.")
     @Test
     void getMyMission() {
         //given
@@ -166,7 +166,7 @@ class MissionServiceTest extends IntegrationTestSupport {
         Member member2 = memberRepository.save(createMember("동석2", MemberGender.MALE));
         Mission mission = missionRepository.save(createMission(date, MissionState.ACTIVE));
         Mission mission2 = missionRepository.save(createMission(date2, MissionState.ACTIVE));
-        List<MemberMission> savedMemberMissions = memberMissionRepository.saveAll(List.of(
+        memberMissionRepository.saveAll(List.of(
             createMemberMission("내용1",member, mission),
             createMemberMission("내용2",member, mission2))
         );
