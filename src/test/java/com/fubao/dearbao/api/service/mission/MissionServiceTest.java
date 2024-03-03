@@ -58,7 +58,7 @@ class MissionServiceTest extends IntegrationTestSupport {
         LocalDateTime today = LocalDateTime.of(todayDate, todayTime);
         Member member = memberRepository.save(createMember("peter", MemberGender.MALE));
         Mission mission = missionRepository.save(createMission(todayDate, MissionState.ACTIVE));
-        memberMissionRepository.save(createMemberMission("content",member, mission));
+        memberMissionRepository.save(createMemberMission("content", member, mission));
 
         //when
         DailyMissionResponse response = (DailyMissionResponse) missionService.dailyMission(
@@ -99,7 +99,7 @@ class MissionServiceTest extends IntegrationTestSupport {
         LocalDateTime today = LocalDateTime.of(todayDate, todayTime);
         Member member = memberRepository.save(createMember("peter", MemberGender.MALE));
         Mission mission = missionRepository.save(createMission(todayDate, MissionState.ACTIVE));
-        memberMissionRepository.save(createMemberMission("content",member, mission));
+        memberMissionRepository.save(createMemberMission("content", member, mission));
 
         //when
         DailyMessageResponse response = (DailyMessageResponse) missionService.dailyMission(
@@ -111,6 +111,25 @@ class MissionServiceTest extends IntegrationTestSupport {
             .contains(true, true, member.getName(), mission.getAnswer());
     }
 
+    @DisplayName("데일리 미션페이지를 조회할때 존재하지 않는 멤버의 id로 요청한 경우 예외가 발생한다.")
+    @Test
+    void dailyMissionWithoutMember() {
+        //given
+        LocalDate todayDate = LocalDate.of(2023, 11, 11);
+        LocalTime todayTime = LocalTime.of(21, 0, 0);
+        LocalDateTime today = LocalDateTime.of(todayDate, todayTime);
+        Member member = memberRepository.save(createMember("peter", MemberGender.MALE));
+        Long fakeId = 111L;
+        Mission mission = missionRepository.save(createMission(todayDate, MissionState.ACTIVE));
+        memberMissionRepository.save(createMemberMission("content", member, mission));
+
+        //when then
+        assertThatThrownBy(() -> missionService.dailyMission(fakeId, today))
+            .isInstanceOf(CustomException.class)
+            .extracting("responseCode")
+            .isEqualTo(ResponseCode.NOT_FOUND_MEMBER);
+    }
+
     @DisplayName("데일리 미션을 세팅한다.")
     @Test
     void setDailyMission() {
@@ -119,7 +138,7 @@ class MissionServiceTest extends IntegrationTestSupport {
         Mission nextMission = createMission(LocalDate.of(2023, 11, 11), MissionState.INACTIVE);
         Member member = memberRepository.save(createMember("peter", MemberGender.MALE));
         List<Mission> missions = missionRepository.saveAll(List.of(nowMission, nextMission));
-        memberMissionRepository.save(createMemberMission("content",member, missions.get(0)));
+        memberMissionRepository.save(createMemberMission("content", member, missions.get(0)));
 
         //when
         missionService.setDailyMission();
@@ -143,9 +162,9 @@ class MissionServiceTest extends IntegrationTestSupport {
         //given
         Mission nowMission = createMission(LocalDate.of(2023, 11, 11), MissionState.END);
         Mission nextMission = createMission(LocalDate.of(2023, 11, 11), MissionState.ACTIVE);
-        Member member = memberRepository.save(createMember( "peter", MemberGender.MALE));
+        Member member = memberRepository.save(createMember("peter", MemberGender.MALE));
         List<Mission> missions = missionRepository.saveAll(List.of(nowMission, nextMission));
-        memberMissionRepository.save(createMemberMission("content",member, missions.get(0)));
+        memberMissionRepository.save(createMemberMission("content", member, missions.get(0)));
 
         //when then
         assertThatThrownBy(() -> missionService.setDailyMission())
@@ -167,10 +186,10 @@ class MissionServiceTest extends IntegrationTestSupport {
         Mission mission = missionRepository.save(createMission(date, MissionState.ACTIVE));
         Mission mission2 = missionRepository.save(createMission(date2, MissionState.ACTIVE));
         memberMissionRepository.saveAll(List.of(
-            createMemberMission("내용1",member, mission),
-            createMemberMission("내용2",member, mission2))
+            createMemberMission("내용1", member, mission),
+            createMemberMission("내용2", member, mission2))
         );
-        memberMissionRepository.save(createMemberMission("내용3",member2,mission));
+        memberMissionRepository.save(createMemberMission("내용3", member2, mission));
 
         //when
         List<GetMyMissionResponse> responses = missionService.getMyMission(member.getId());
@@ -179,8 +198,8 @@ class MissionServiceTest extends IntegrationTestSupport {
         assertThat(responses).hasSize(2)
             .extracting("date", "content")
             .contains(
-                tuple("11:11","내용1"),
-                tuple("12:12","내용2")
+                tuple("11:11", "내용1"),
+                tuple("12:12", "내용2")
             );
     }
 
