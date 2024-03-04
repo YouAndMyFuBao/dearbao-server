@@ -105,7 +105,7 @@ class AuthServiceTest extends IntegrationTestSupport {
         String accessToken = "token";
         String providerId = "001";
         Member member = memberRepository.save(createMemberWithInit(MemberRole.ROLE_MEMBER));
-        socialLoginRepository.save(createSocialLogin(providerId,member));
+        socialLoginRepository.save(createSocialLogin(providerId, member));
         KakaoLoginServiceDto kakaoLoginServiceDto = KakaoLoginServiceDto.of(code);
         given(kakaoApiClient.requestAccessToken(any(KakaoLoginServiceDto.class)))
             .willReturn(accessToken);
@@ -207,6 +207,23 @@ class AuthServiceTest extends IntegrationTestSupport {
             .isEqualTo(ResponseCode.INVALID_NICKNAME);
     }
 
+    @DisplayName("멤버 정보를 입력할때 존재하지 않는 멤버의 id로 요청한 경우 예외가 발생한다.")
+    @Test
+    void initMemberWithoutMember() {
+        //given
+        Long memberId = 1L;
+        String nickname = "peter";
+        MemberGender title = MemberGender.FEMALE;
+        InitMemberServiceDto initMemberServiceDto = InitMemberServiceDto.of(memberId, nickname,
+            title);
+
+        //when
+        assertThatThrownBy(()->authService.initMember(initMemberServiceDto))
+            .isInstanceOf(CustomException.class)
+            .extracting("responseCode")
+            .isEqualTo(ResponseCode.NOT_FOUND_MEMBER);
+    }
+
     @DisplayName("token을 재생성한다.")
     @Test
     void tokenRegenerate() {
@@ -263,7 +280,6 @@ class AuthServiceTest extends IntegrationTestSupport {
 
         //when
         authService.logout(dto);
-
     }
 
     private Member createMember(MemberRole memberRole) {

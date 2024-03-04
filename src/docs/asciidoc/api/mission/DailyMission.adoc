@@ -1,0 +1,20 @@
+[[daily-mission]]
+=== 미션 페이지 (메세지 오픈 시간)
+
+==== HTTP Request
+include::{snippets}/mission-controller-docs-test/daily-mission-with-message-open-time/http-request.adoc[]
+include::{snippets}/daily mission with message open time/request-headers.adoc[]
+
+==== HTTP Response
+include::{snippets}/mission-controller-docs-test/daily-mission-with-message-open-time/http-response.adoc[]
+include::{snippets}/daily mission with message open time/response-fields.adoc[]
+
+=== 미션 페이지 (메세지 미오픈 시간)
+
+==== HTTP Request
+include::{snippets}/mission-controller-docs-test/daily-mission-with-daily-mission-not-open-time/http-request.adoc[]
+include::{snippets}/daily mission with message not open time/request-headers.adoc[]
+
+==== HTTP Response
+include::{snippets}/mission-controller-docs-test/daily-mission-with-daily-mission-not-open-time/http-response.adoc[]
+include::{snippets}/daily mission with message not open time/response-fields.adoc[]

@@ -2,9 +2,7 @@
 === Health Check
 
 ==== HTTP Request
-include::{snippets}/health-check/http-request.adoc[]
-include::{snippets}/health-check/request-body.adoc[]
+include::{snippets}/health-controller-docs-test/health-check/http-request.adoc[]
 
 ==== HTTP Response
-include::{snippets}/health-check/http-response.adoc[]
-include::{snippets}/health-check/response-body.adoc[]
+include::{snippets}/health-controller-docs-test/health-check/http-response.adoc[]

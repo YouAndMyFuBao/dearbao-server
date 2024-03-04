@@ -1,0 +1,10 @@
+[[my-mission]]
+=== 나의 미션 조회
+
+==== HTTP Request
+include::{snippets}/mission-controller-docs-test/get-my-mission/http-request.adoc[]
+include::{snippets}/get my mission/request-headers.adoc[]
+
+==== HTTP Response
+include::{snippets}/mission-controller-docs-test/get-my-mission/http-response.adoc[]
+include::{snippets}/get my mission/response-fields.adoc[]

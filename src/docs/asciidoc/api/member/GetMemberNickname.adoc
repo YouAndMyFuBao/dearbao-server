@@ -1,0 +1,10 @@
+[[get-nickname]]
+=== 닉네임 조회
+
+==== HTTP Request
+include::{snippets}/member-controller-docs-test/get-member-nickname/http-request.adoc[]
+include::{snippets}/get nickname/request-headers.adoc[]
+
+==== HTTP Response
+include::{snippets}/member-controller-docs-test/get-member-nickname/http-response.adoc[]
+include::{snippets}/get nickname/response-fields.adoc[]

@@ -13,3 +13,22 @@ endif::[]
 == HealthCheck API
 
 include::api/healthcheck/HealthCheck.adoc[]
+
+[[auth-API]]
+== Auth API
+
+include::api/auth/KakaoLogin.adoc[]
+include::api/auth/InitMember.adoc[]
+include::api/auth/Logout.adoc[]
+include::api/auth/TokenRegenerate.adoc[]
+
+[[member-API]]
+== Member API
+
+include::api/member/GetMemberNickname.adoc[]
+
+[[mission-API]]
+== Mission API
+
+include::api/mission/DailyMission.adoc[]
+include::api/mission/GetMyMission.adoc[]

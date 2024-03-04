@@ -1,0 +1,11 @@
+[[init-member]]
+=== 멤버 초기 설정
+
+==== HTTP Request
+include::{snippets}/auth-controller-docs-test/init-member/http-request.adoc[]
+include::{snippets}/init member/request-headers.adoc[]
+include::{snippets}/init member/request-fields.adoc[]
+
+==== HTTP Response
+include::{snippets}/auth-controller-docs-test/init-member/http-response.adoc[]
+include::{snippets}/init member/response-fields.adoc[]
