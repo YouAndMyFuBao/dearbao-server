@@ -21,3 +21,8 @@ include::api/auth/KakaoLogin.adoc[]
 include::api/auth/InitMember.adoc[]
 include::api/auth/Logout.adoc[]
 include::api/auth/TokenRegenerate.adoc[]
+
+[[member-API]]
+== Member API
+
+include::api/member/GetMemberNickname.adoc[]
