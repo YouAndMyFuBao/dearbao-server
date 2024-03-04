@@ -6,14 +6,16 @@ import lombok.Getter;
 
 @Getter
 public class GetMissionResponse {
+    Long id;
     String date;
     String content;
     String message;
     String constructor;
     String openStatus;
     @Builder
-    public GetMissionResponse(String date, String content, String message, String constructor,
+    public GetMissionResponse(Long id, String date, String content, String message, String constructor,
         String openStatus) {
+        this.id = id;
         this.date = date;
         this.content = content;
         this.message = message;

@@ -70,6 +70,7 @@ public class AdminServiceImpl implements AdminService {
         List<Mission> missions = missionRepository.findAll();
         return missions.stream().map(
             mission -> GetMissionResponse.builder()
+                .id(mission.getId())
                 .constructor(mission.getConstructor())
                 .message(mission.getAnswer())
                 .openStatus(mission.getState().getName())
