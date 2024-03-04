@@ -1,0 +1,10 @@
+[[kakao-login]]
+=== Kakao Login
+
+==== HTTP Request
+include::{snippets}/auth-controller-docs-test/kakao-Login/http-request.adoc[]
+include::{snippets}/kakao Login/request-fields.adoc[]
+
+==== HTTP Response
+include::{snippets}/auth-controller-docs-test/kakao-Login/http-response.adoc[]
+include::{snippets}/kakao Login/response-fields.adoc[]

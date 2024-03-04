@@ -1,0 +1,10 @@
+[[regenerate-token]]
+=== 토큰 재발급
+
+==== HTTP Request
+include::{snippets}/auth-controller-docs-test/token-regenerate/http-request.adoc[]
+include::{snippets}/regenerate token/request-fields.adoc[]
+
+==== HTTP Response
+include::{snippets}/auth-controller-docs-test/token-regenerate/http-response.adoc[]
+include::{snippets}/regenerate token/response-fields.adoc[]
