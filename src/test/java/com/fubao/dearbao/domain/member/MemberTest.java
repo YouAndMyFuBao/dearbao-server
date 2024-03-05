@@ -90,6 +90,17 @@ class MemberTest extends IntegrationTestSupport {
         assertThat(result).isTrue();
     }
 
+    @DisplayName("회원탈퇴시 멤버상태를 비활성으로 변경한다.")
+    @Test
+    void deactivate() {
+        //given
+        Member member = createMember(MemberRole.ROLE_MEMBER);
+        //when
+        member.deactivate();
+        //then
+        assertThat(member.getState()).isEqualTo(MemberState.INACTIVE);
+    }
+
     private Member createMember(MemberRole memberRole) {
         return Member.builder()
             .state(MemberState.ACTIVE)

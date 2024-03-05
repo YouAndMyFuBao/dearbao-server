@@ -26,6 +26,7 @@ include::api/auth/TokenRegenerate.adoc[]
 == Member API
 
 include::api/member/GetMemberNickname.adoc[]
+include::api/member/Deactivate.adoc[]
 
 [[mission-API]]
 == Mission API

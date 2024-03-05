@@ -1,0 +1,10 @@
+[[deactivation]]
+=== 회원 탈퇴
+
+==== HTTP Request
+include::{snippets}/member-controller-docs-test/deactivate/http-request.adoc[]
+include::{snippets}/deactivate/request-headers.adoc[]
+
+==== HTTP Response
+include::{snippets}/member-controller-docs-test/deactivate/http-response.adoc[]
+include::{snippets}/deactivate/response-fields.adoc[]
