@@ -21,7 +21,7 @@ class MemberServiceTest extends IntegrationTestSupport {
     @Test
     void getMemberNickname() {
         //given
-        Member member = memberRepository.save(createMember( "peter", MemberGender.MALE));
+        Member member = memberRepository.save(createMember("peter", MemberGender.MALE));
 
         //when
         GetMemberNicknameResponse response = memberService.getMemberNickname(member.getId());
@@ -37,7 +37,7 @@ class MemberServiceTest extends IntegrationTestSupport {
         //given
         Long memberId = 1L;
         //when then
-        assertThatThrownBy(()->memberService.getMemberNickname(memberId))
+        assertThatThrownBy(() -> memberService.getMemberNickname(memberId))
             .isInstanceOf(CustomException.class)
             .extracting("responseCode")
             .isEqualTo(ResponseCode.NOT_FOUND_MEMBER);

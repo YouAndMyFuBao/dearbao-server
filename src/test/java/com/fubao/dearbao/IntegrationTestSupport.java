@@ -1,7 +1,9 @@
 package com.fubao.dearbao;
 
+import com.fubao.dearbao.api.service.enquiry.EnquiryService;
 import com.fubao.dearbao.api.service.member.MemberService;
 import com.fubao.dearbao.api.service.mission.MissionService;
+import com.fubao.dearbao.domain.enquiry.EnquiryRepository;
 import com.fubao.dearbao.domain.member.MemberRepository;
 import com.fubao.dearbao.domain.member.SocialLoginRepository;
 import com.fubao.dearbao.domain.mission.MemberMissionRepository;
@@ -23,9 +25,13 @@ public abstract class IntegrationTestSupport {
     @Autowired
     protected MemberService memberService;
     @Autowired
+    protected EnquiryService enquiryService;
+    @Autowired
     protected MemberRepository memberRepository;
     @Autowired
     protected MissionRepository missionRepository;
+    @Autowired
+    protected EnquiryRepository enquiryRepository;
     @Autowired
     protected SocialLoginRepository socialLoginRepository;
     @Autowired
@@ -39,6 +45,7 @@ public abstract class IntegrationTestSupport {
     void tearDown() {
         socialLoginRepository.deleteAllInBatch();
         memberMissionRepository.deleteAllInBatch();
+        enquiryRepository.deleteAllInBatch();
         memberRepository.deleteAllInBatch();
         missionRepository.deleteAllInBatch();
     }

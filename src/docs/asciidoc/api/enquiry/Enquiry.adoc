@@ -1,0 +1,11 @@
+[[enquiry]]
+=== 문의하기
+
+==== HTTP Request
+include::{snippets}/enquiry-controller-docs-test/enquiry/http-request.adoc[]
+include::{snippets}/enquiry/request-headers.adoc[]
+include::{snippets}/enquiry/request-fields.adoc[]
+
+==== HTTP Response
+include::{snippets}/enquiry-controller-docs-test/enquiry/http-response.adoc[]
+include::{snippets}/enquiry/response-fields.adoc[]

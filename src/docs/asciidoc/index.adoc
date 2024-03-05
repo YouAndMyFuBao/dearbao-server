@@ -32,3 +32,8 @@ include::api/member/GetMemberNickname.adoc[]
 
 include::api/mission/DailyMission.adoc[]
 include::api/mission/GetMyMission.adoc[]
+
+[[enquiry-API]]
+== Enquiry API
+
+include::api/enquiry/Enquiry.adoc[]
